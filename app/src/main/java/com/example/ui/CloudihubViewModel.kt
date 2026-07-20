@@ -830,7 +830,7 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
 
     // Media Download Hub / Personal Resolver API
     // Change this to your deployed Vercel backend URL after deployment.
-    var mediaResolverBaseUrl by mutableStateOf("https://your-cloudehub-resolver.vercel.app")
+    var mediaResolverBaseUrl by mutableStateOf("https://cloudihub.vercel.app")
     var mediaHubSearchQuery by mutableStateOf("")
         private set
     var supportedMediaSites by mutableStateOf<List<SupportedMediaSite>>(emptyList())
