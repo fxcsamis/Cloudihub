@@ -25,6 +25,7 @@ import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.runtime.CompositionLocalProvider
 import com.example.ui.components.LocalSharedTransitionScope
 import com.example.ui.components.CloudeHubSplashScreen
+import com.example.ui.components.CloudihubNavigationLoadingOverlay
 import com.example.ui.components.FloatingAiLottieWidget
 import com.example.ui.CloudihubViewModel
 import com.example.ui.components.CloudSkyBackground
@@ -183,12 +184,27 @@ class MainActivity : FragmentActivity() {
         enableEdgeToEdge()
         
         setContent {
-            var showSplashScreen by remember { mutableStateOf(true) }
+            // Splash stays up until BOTH the brand animation has finished AND the
+            // home feed has actually finished loading - so the app never reveals
+            // Home in a half-loaded state. splashAnimationDone flips once via the
+            // splash screen's own timed sequence or a manual tap/back-press skip.
+            var splashAnimationDone by remember { mutableStateOf(false) }
+            // Safety net: if the home feed load somehow never completes (e.g. an
+            // unexpected error outside the normal fallback path), don't trap the
+            // user on the splash screen forever - force through after 8s.
+            var splashSafetyTimeoutHit by remember { mutableStateOf(false) }
+            LaunchedEffect(splashAnimationDone) {
+                if (splashAnimationDone) {
+                    kotlinx.coroutines.delay(8000)
+                    splashSafetyTimeoutHit = true
+                }
+            }
+            val showSplashScreen = !splashAnimationDone || (viewModel.isLoadingVideos && !splashSafetyTimeoutHit)
             var showExitConfirmDialog by remember { mutableStateOf(false) }
 
             BackHandler {
                 if (showSplashScreen) {
-                    showSplashScreen = false
+                    splashAnimationDone = true
                 } else if (showExitConfirmDialog) {
                     showExitConfirmDialog = false
                 } else if (viewModel.showPrivateVaultUnlockDialog || viewModel.showPrivateVaultPasswordInputDialog || viewModel.showPrivateVaultPasswordTypeDialog) {
@@ -263,7 +279,7 @@ class MainActivity : FragmentActivity() {
                         ) {
                             CloudeHubSplashScreen(
                                 onSplashFinished = {
-                                    showSplashScreen = false
+                                    splashAnimationDone = true
                                 }
                             )
                         }
@@ -285,6 +301,18 @@ class MainActivity : FragmentActivity() {
                                     NavigationTab.Hub -> HubScreen(viewModel = viewModel)
                                     NavigationTab.Browser -> BrowserScreen(viewModel = viewModel)
                                 }
+                            }
+
+                            // 2b. CLOUDIHUB branded loading overlay shown while the
+                            // just-selected tab's content/data is still preparing,
+                            // so the destination screen is never revealed half-ready.
+                            AnimatedVisibility(
+                                visible = viewModel.isTabContentLoading,
+                                enter = fadeIn(),
+                                exit = fadeOut(animationSpec = tween(280)),
+                                modifier = Modifier.zIndex(1500f)
+                            ) {
+                                CloudihubNavigationLoadingOverlay()
                             }
                         }
 

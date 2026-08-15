@@ -122,8 +122,17 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     // --- MODULE 1 & 2: Shimmer Loading & Google Sign In / Hybrid Algorithm ---
-    var isLoadingVideos by mutableStateOf(false)
+    // Starts true (not false) so the splash screen correctly waits for the very
+    // first home feed load instead of racing ahead of loadHybridFeed()'s coroutine.
+    var isLoadingVideos by mutableStateOf(true)
         private set
+
+    // --- Per-tab navigation loading overlay: true while the just-selected tab's
+    // content/data is being prepared, so the UI can show the CLOUDIHUB loading
+    // screen instead of a half-ready tab. ---
+    var isTabContentLoading by mutableStateOf(false)
+        private set
+    private var tabLoadJob: Job? = null
     var currentDetectedRegion by mutableStateOf("US")
         private set
     var isGoogleSignedIn by mutableStateOf(false)
@@ -1136,8 +1145,39 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     fun selectTab(tab: NavigationTab) {
+        val isSameTab = tab == activeTab
         activeTab = tab
         isNavBarVisible = true
+
+        // Don't re-run the loading gate if the user tapped the tab they're
+        // already on (e.g. "scroll to top" behaviour some nav bars have).
+        if (isSameTab) return
+
+        tabLoadJob?.cancel()
+        tabLoadJob = viewModelScope.launch {
+            isTabContentLoading = true
+            when (tab) {
+                NavigationTab.Home -> {
+                    // Real network-backed content: wait for the actual fetch to
+                    // finish (kicks it off if we don't have videos yet), so the
+                    // loading screen stays up for exactly as long as it takes.
+                    if (_videos.value.isEmpty() && !isLoadingVideos) {
+                        loadHybridFeed()
+                    }
+                    while (isLoadingVideos) {
+                        delay(40)
+                    }
+                }
+                else -> {
+                    // These tabs work from data that's already in memory, so
+                    // there's no real fetch to await - just yield a frame so
+                    // Compose can finish composing/laying out the destination
+                    // screen behind the overlay before we reveal it.
+                    delay(1)
+                }
+            }
+            isTabContentLoading = false
+        }
     }
 
     private var searchJob: Job? = null
