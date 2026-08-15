@@ -91,6 +91,7 @@ import java.io.ByteArrayInputStream
 
 
 // --- Browser tab: in-browser downloads bottom sheet ---
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BrowserDownloadsSheet(
     viewModel: CloudihubViewModel,

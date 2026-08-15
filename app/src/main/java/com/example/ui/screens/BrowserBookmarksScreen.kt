@@ -457,7 +457,7 @@ fun AddBookmarkDialog(
 }
 
 @Composable
-private fun AdultSiteBrandTile(
+fun AdultSiteBrandTile(
     name: String,
     url: String,
     onSelect: () -> Unit,

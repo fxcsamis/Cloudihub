@@ -279,5 +279,3 @@ fun SafeBrowsingDialog(
         shape = RoundedCornerShape(20.dp)
     )
 }
-
-@OptIn(ExperimentalMaterial3Api::class)

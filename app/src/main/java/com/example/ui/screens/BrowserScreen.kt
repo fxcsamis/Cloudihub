@@ -91,7 +91,7 @@ import java.io.ByteArrayInputStream
 
 
 // --- Browser tab: root screen (this is the file MainActivity/other screens reference) ---
-private fun getDomainName(url: String): String {
+fun getDomainName(url: String): String {
     return try {
         val cleaned = url.trim()
             .replace("https://", "")
