@@ -136,7 +136,7 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
     var isTabContentLoading by mutableStateOf(false)
         private set
     private var tabLoadJob: Job? = null
-    private val visitedTabs = mutableSetOf(NavigationTab.Home)
+    private val visitedTabs = mutableSetOf<NavigationTab>(NavigationTab.Home)
     var currentDetectedRegion by mutableStateOf("US")
         private set
     var isGoogleSignedIn by mutableStateOf(false)
@@ -674,7 +674,7 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
         private set
 
     var recentSearches by mutableStateOf<List<String>>(emptyList())
-        private set
+        internal set
 
     // Browser state
     var browserUrl by mutableStateOf("")

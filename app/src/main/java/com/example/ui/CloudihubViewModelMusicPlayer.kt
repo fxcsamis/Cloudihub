@@ -1,5 +1,8 @@
 package com.example.ui
 
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.delay
+
 // Music mini-player controls (play/pause/next/previous + the 1s progress ticker
 // coroutine). musicTickerJob was changed from `private` to `internal` on the main
 // class so these extension functions can still cancel/reassign it - same
