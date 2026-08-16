@@ -76,6 +76,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.Canvas
@@ -213,6 +214,9 @@ fun HomeScreen(
 ) {
     val videos = viewModel.videos
     val searchQuery = viewModel.searchQuery
+    // PILOT: isLoadingVideos is now a StateFlow - collected lifecycle-aware so
+    // this pauses when the user isn't on the Home tab instead of always running.
+    val isLoadingVideosState by viewModel.isLoadingVideos.collectAsStateWithLifecycle()
     val activeDownloads by viewModel.downloads.collectAsState()
     val activeCount = activeDownloads.count { it.status == com.example.ui.DownloadStatus.DOWNLOADING || it.status == com.example.ui.DownloadStatus.QUEUED }
 
@@ -234,7 +238,7 @@ fun HomeScreen(
     var topBarOffsetHeightPx by remember { mutableStateOf(0f) }
     var topBarHeightPx by remember { mutableStateOf(with(density) { 140.dp.toPx() }) }
 
-    val isEmptyResults = videos.isEmpty() && !viewModel.isLoadingVideos
+    val isEmptyResults = videos.isEmpty() && !isLoadingVideosState
 
     LaunchedEffect(isEmptyResults) {
         if (isEmptyResults) {
@@ -314,7 +318,7 @@ fun HomeScreen(
         }
         // --- VIDEO FEED / SHIMMER FEED WITH PULL TO REFRESH ---
         PullToRefreshBox(
-            isRefreshing = viewModel.isLoadingVideos,
+            isRefreshing = isLoadingVideosState,
             onRefresh = { viewModel.loadHybridFeed() },
             modifier = Modifier.fillMaxSize()
         ) {
@@ -325,7 +329,7 @@ fun HomeScreen(
                 modifier = Modifier.fillMaxSize()
             ) {
                 // Content Feed Items: Loading, Empty, or Videos
-                if (viewModel.isLoadingVideos) {
+                if (isLoadingVideosState) {
                     items(3) {
                         Box(modifier = Modifier.padding(horizontal = 16.dp)) {
                             ShimmerVideoCloudCard()

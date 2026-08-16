@@ -183,6 +183,14 @@ fun VideoPreviewPlayer(videoUrl: String, modifier: Modifier = Modifier) {
                     if (view.isPlaying) view.pause()
                 }
             },
+            onRelease = { view ->
+                // CRASH FIX: VideoView holds a native MediaPlayer that keeps
+                // decoding/rendering resources allocated until explicitly
+                // stopped. This was never released when the chat bubble
+                // scrolled off-screen or the widget closed, so repeated video
+                // previews over a session would leak MediaPlayer instances.
+                view.stopPlayback()
+            },
             modifier = Modifier.fillMaxSize()
         )
 

@@ -122,10 +122,13 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     // --- MODULE 1 & 2: Shimmer Loading & Google Sign In / Hybrid Algorithm ---
-    // Starts true (not false) so the splash screen correctly waits for the very
-    // first home feed load instead of racing ahead of loadHybridFeed()'s coroutine.
-    var isLoadingVideos by mutableStateOf(true)
-        private set
+    // PILOT: migrated from `mutableStateOf` to StateFlow. Screens now read this
+    // via `collectAsStateWithLifecycle()`, which automatically stops collecting
+    // (and the recomposition work that comes with it) while the screen isn't
+    // visible - e.g. while the user is on the Music/Browser/Profile tab, Home's
+    // loading-state reads pause instead of staying active in the background.
+    private val _isLoadingVideos = MutableStateFlow(true)
+    val isLoadingVideos: StateFlow<Boolean> = _isLoadingVideos.asStateFlow()
 
     // Per-tab navigation loading overlay: true while the just-selected tab's
     // content/data is being prepared, so the UI can show the CLOUDIHUB loading
@@ -232,7 +235,7 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun loadHybridFeed() {
         viewModelScope.launch {
-            isLoadingVideos = true
+            _isLoadingVideos.value = true
             addLog("Initiating hybrid feed loader...")
             
             // Extract country code via device locale to customize region-based trending instantly and offline
@@ -314,12 +317,12 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
                 _videos.value = getLocalFallbackVideos()
                 extractorModeMsg = "Real-time APIs offline. Active local fallback: $exceptionMsg"
             }
-            isLoadingVideos = false
+            _isLoadingVideos.value = false
         }
     }
 
     suspend fun performPipedSearch(query: String) {
-        isLoadingVideos = true
+        _isLoadingVideos.value = true
         addLog("Initiating search for query: '$query'")
         var successful = false
         var exceptionMsg = ""
@@ -360,7 +363,7 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
             _videos.value = filteredFallback
             extractorModeMsg = "Search offline. Local match count: ${filteredFallback.size}"
         }
-        isLoadingVideos = false
+        _isLoadingVideos.value = false
     }
 
     fun extractStreamAndPreparePlayer(video: CloudVideo) {
@@ -892,10 +895,10 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
                     // no reload, no overlay, just the cached result.
                     if (_videos.value.isEmpty()) {
                         isTabContentLoading = true
-                        if (!isLoadingVideos) {
+                        if (!_isLoadingVideos.value) {
                             loadHybridFeed()
                         }
-                        while (isLoadingVideos) {
+                        while (_isLoadingVideos.value) {
                             delay(40)
                         }
                         isTabContentLoading = false
@@ -939,11 +942,11 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
         addSearchQueryToHistory(query)
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
-            isLoadingVideos = true
+            _isLoadingVideos.value = true
             addLog("Done key clicked. Showing video loading skeleton animation for query: '$query'")
             delay(1500) // Beautiful delay
             _videos.value = emptyList() // Clear videos to force showing No Search Results page
-            isLoadingVideos = false
+            _isLoadingVideos.value = false
             addLog("Simulation complete. Showing no search results.")
         }
     }

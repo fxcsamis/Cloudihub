@@ -411,6 +411,22 @@ fun WaveBallLoaderHtmlView(
                 lastLoadedHtml.value = htmlData
             }
         },
+        onRelease = { webView ->
+            // CRASH FIX: this WebView was never being destroyed when the
+            // composable left the screen - only detached from the view
+            // hierarchy. WebView holds native/off-heap memory (its own
+            // Chromium renderer) that Compose's normal cleanup does NOT
+            // free on its own. With this component appearing on every menu
+            // icon that has a lottieUrl and on every "loading" state, the
+            // leaked WebViews accumulated in memory the longer the app was
+            // used - this is very likely the cause of the crash after a
+            // couple of minutes of use. Explicitly destroying it here frees
+            // that memory immediately when the view is no longer needed.
+            webView.stopLoading()
+            webView.clearHistory()
+            webView.removeAllViews()
+            webView.destroy()
+        },
         modifier = modifier
     )
 }

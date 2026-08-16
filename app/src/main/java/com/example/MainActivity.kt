@@ -56,6 +56,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.setValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PowerSettingsNew
@@ -199,7 +200,11 @@ class MainActivity : FragmentActivity() {
                     splashSafetyTimeoutHit = true
                 }
             }
-            val showSplashScreen = !splashAnimationDone || (viewModel.isLoadingVideos && !splashSafetyTimeoutHit)
+            // PILOT: isLoadingVideos is now a StateFlow - collected lifecycle-aware
+            // here so this read pauses along with the rest of the screen instead of
+            // always being active.
+            val isLoadingVideosState by viewModel.isLoadingVideos.collectAsStateWithLifecycle()
+            val showSplashScreen = !splashAnimationDone || (isLoadingVideosState && !splashSafetyTimeoutHit)
             var showExitConfirmDialog by remember { mutableStateOf(false) }
 
             BackHandler {

@@ -1,6 +1,7 @@
 package com.example.ui.screens
 
-import com.example.ui.components.WaveBallLoaderHtmlView
+import com.lottiefiles.dotlottie.core.compose.ui.DotLottieAnimation
+import com.lottiefiles.dotlottie.core.util.DotLottieSource
 
 import android.app.Activity
 import android.widget.Toast
@@ -166,8 +167,16 @@ fun ProfileMenuItem(
             contentAlignment = Alignment.Center
         ) {
             if (!lottieUrl.isNullOrEmpty()) {
-                WaveBallLoaderHtmlView(
-                    transparentBg = true,
+                // BUG FIX: this used to ignore the lottieUrl parameter entirely and
+                // always show a generic loading spinner instead of the actual small
+                // preview animation (e.g. the Invite Friend icon). Now it plays the
+                // real animation the URL points to, same as the full-size version
+                // used on the destination screen (frozen on its last frame once
+                // done, so it reads as a static icon rather than a looping spinner).
+                DotLottieAnimation(
+                    source = DotLottieSource.Url(lottieUrl),
+                    autoplay = true,
+                    loop = false,
                     modifier = Modifier.size(36.dp)
                 )
             } else if (!imageUrl.isNullOrEmpty()) {
