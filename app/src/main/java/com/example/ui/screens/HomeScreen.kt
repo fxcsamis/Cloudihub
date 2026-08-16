@@ -5,6 +5,9 @@ import android.content.Intent
 import android.widget.Toast
 import com.example.ui.components.ProfileAvatarWithBadge
 import com.example.ui.components.LocalSharedTransitionScope
+import com.example.ui.clearSearchHistory
+import com.example.ui.addSearchQueryToHistory
+import com.example.ui.removeSearchQueryFromHistory
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*

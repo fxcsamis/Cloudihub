@@ -1,5 +1,8 @@
 package com.example.ui.screens
 
+import com.example.ui.addSearchQueryToHistory
+import com.example.ui.clearSearchHistory
+import com.example.ui.removeSearchQueryFromHistory
 import android.app.Activity
 import android.widget.Toast
 import androidx.compose.animation.*
