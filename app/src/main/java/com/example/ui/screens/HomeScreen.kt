@@ -99,6 +99,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import com.example.ui.CloudVideo
 import com.example.ui.CloudihubViewModel
 import com.example.ui.components.CloudShape
@@ -272,25 +273,29 @@ fun HomeScreen(
     val categoryLazyRowState = rememberLazyListState()
     LaunchedEffect(categoryLazyRowState) {
         while (true) {
-            // PERF FIX: also pause the auto-slide while the user is actively scrolling
-            // the main video feed. Previously this loop kept nudging the category row
-            // every 16ms (~every frame) no matter what else was happening on screen,
-            // which competed with the main feed's own scroll for frame time and caused
-            // the "stuttery scroll" feeling. Now it steps back and lets the feed scroll
-            // get the full frame budget, then resumes once things are calm.
-            if (categoryLazyRowState.isScrollInProgress || lazyListState.isScrollInProgress) {
-                // Wait while user is dragging either row
-                while (categoryLazyRowState.isScrollInProgress || lazyListState.isScrollInProgress) {
-                    kotlinx.coroutines.delay(100)
+            when {
+                // User is directly dragging the category chip row itself - pause,
+                // then give the intentional short breather before auto-sliding
+                // resumes (this matches the original designed behaviour).
+                categoryLazyRowState.isScrollInProgress -> {
+                    while (categoryLazyRowState.isScrollInProgress) {
+                        kotlinx.coroutines.delay(100)
+                    }
+                    kotlinx.coroutines.delay(2500)
                 }
-                // Pause 2.5 seconds after user finishes scrolling before auto-slide resumes
-                kotlinx.coroutines.delay(2500)
-            } else {
-                // PERF FIX: stepping every 32ms instead of every 16ms halves how often
-                // this coroutine wakes up and forces a layout pass, with no visible
-                // difference in the drift speed (distance per step is doubled to match).
-                categoryLazyRowState.scrollBy(2.4f)
-                kotlinx.coroutines.delay(32)
+                // PERF FIX: the main video feed is being scrolled elsewhere on
+                // screen - just skip this step so we're not competing for frame
+                // budget during the drag, but resume on the very next tick once
+                // it settles. No artificial cooldown here: this isn't the user
+                // interacting with the marquee itself, so it should pick back up
+                // immediately from exactly where it paused, not restart or stall.
+                lazyListState.isScrollInProgress -> {
+                    kotlinx.coroutines.delay(32)
+                }
+                else -> {
+                    categoryLazyRowState.scrollBy(2.4f)
+                    kotlinx.coroutines.delay(32)
+                }
             }
         }
     }
@@ -1154,8 +1159,8 @@ fun AnimatedIconButton(
             )
         } else if (!imageUrl.isNullOrEmpty()) {
             Box(contentAlignment = Alignment.Center) {
-                Image(
-                    painter = rememberAsyncImagePainter(imageUrl),
+                AsyncImage(
+                    model = imageUrl,
                     contentDescription = contentDescription,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -1246,8 +1251,8 @@ fun VideoCloudCard(
                 )
 
                 // Actual video thumbnail image sitting inside
-                Image(
-                    painter = rememberAsyncImagePainter(video.imageUrl),
+                AsyncImage(
+                    model = video.imageUrl,
                     contentDescription = video.title,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
@@ -1644,8 +1649,8 @@ private fun ShareActionRow(
             contentAlignment = Alignment.Center
         ) {
             if (!imageUrl.isNullOrEmpty()) {
-                Image(
-                    painter = rememberAsyncImagePainter(imageUrl),
+                AsyncImage(
+                    model = imageUrl,
                     contentDescription = title,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -1762,8 +1767,8 @@ fun DownloadVideoBottomSheet(
                                 .size(width = 86.dp, height = 54.dp)
                                 .clip(RoundedCornerShape(8.dp))
                         ) {
-                            Image(
-                                painter = rememberAsyncImagePainter(video.imageUrl),
+                            AsyncImage(
+                                model = video.imageUrl,
                                 contentDescription = video.title,
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier.fillMaxSize()
@@ -2179,8 +2184,8 @@ fun VideoMoreOptionsSheet(
                     .fillMaxWidth()
                     .padding(bottom = 14.dp)
             ) {
-                Image(
-                    painter = rememberAsyncImagePainter(video.imageUrl),
+                AsyncImage(
+                    model = video.imageUrl,
                     contentDescription = video.title,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier

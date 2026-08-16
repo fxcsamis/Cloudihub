@@ -294,12 +294,29 @@ class MainActivity : FragmentActivity() {
                             } else if (viewModel.showAiFullChatScreen) {
                                 AiCopilotFullChatScreen(viewModel = viewModel)
                             } else {
-                                when (viewModel.activeTab) {
-                                    NavigationTab.Profile -> ProfileScreen(viewModel = viewModel)
-                                    NavigationTab.Home -> HomeScreen(viewModel = viewModel)
-                                    NavigationTab.Music -> MusicScreen(viewModel = viewModel)
-                                    NavigationTab.Hub -> HubScreen(viewModel = viewModel)
-                                    NavigationTab.Browser -> BrowserScreen(viewModel = viewModel)
+                                // Smooth cross-fade + subtle slide whenever the
+                                // active tab changes - covers every tab including
+                                // Hub, so switching to Hub (or any other tab) now
+                                // animates in instead of hard-cutting.
+                                AnimatedContent(
+                                    targetState = viewModel.activeTab,
+                                    transitionSpec = {
+                                        (fadeIn(animationSpec = tween(220, delayMillis = 60)) +
+                                            slideInVertically(
+                                                initialOffsetY = { it / 24 },
+                                                animationSpec = tween(260, easing = EaseOutQuart)
+                                            )) togetherWith
+                                            fadeOut(animationSpec = tween(150))
+                                    },
+                                    label = "TabContentTransition"
+                                ) { tab ->
+                                    when (tab) {
+                                        NavigationTab.Profile -> ProfileScreen(viewModel = viewModel)
+                                        NavigationTab.Home -> HomeScreen(viewModel = viewModel)
+                                        NavigationTab.Music -> MusicScreen(viewModel = viewModel)
+                                        NavigationTab.Hub -> HubScreen(viewModel = viewModel)
+                                        NavigationTab.Browser -> BrowserScreen(viewModel = viewModel)
+                                    }
                                 }
                             }
 

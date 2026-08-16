@@ -74,6 +74,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import com.example.ui.CloudihubViewModel
 import com.example.ui.MusicTrack
 
@@ -186,22 +187,31 @@ fun MusicScreen(
 
     // Marquee runner state for category filter chips in top bar
     val topCategoryLazyRowState = rememberLazyListState()
+    val musicListState = rememberLazyListState()
     LaunchedEffect(topCategoryLazyRowState) {
         while (true) {
-            if (topCategoryLazyRowState.isScrollInProgress) {
-                while (topCategoryLazyRowState.isScrollInProgress) {
-                    kotlinx.coroutines.delay(100)
+            when {
+                topCategoryLazyRowState.isScrollInProgress -> {
+                    while (topCategoryLazyRowState.isScrollInProgress) {
+                        kotlinx.coroutines.delay(100)
+                    }
+                    kotlinx.coroutines.delay(2500)
                 }
-                kotlinx.coroutines.delay(2500)
-            } else {
-                topCategoryLazyRowState.scrollBy(1.2f)
-                kotlinx.coroutines.delay(16)
+                // Main track list scrolling elsewhere - skip this step only, resume
+                // immediately next tick once it settles (no artificial cooldown).
+                musicListState.isScrollInProgress -> {
+                    kotlinx.coroutines.delay(32)
+                }
+                else -> {
+                    topCategoryLazyRowState.scrollBy(2.4f)
+                    kotlinx.coroutines.delay(32)
+                }
             }
         }
     }
 
-    // Scroll state
-    val musicListState = rememberLazyListState()
+    // Scroll state (declared above, alongside topCategoryLazyRowState, so the
+    // auto-slide loop can reference it)
 
     // --- TOP BAR ENTRANCE & SCROLL ANIMATION STATE ---
     var isTopBarMounted by remember { mutableStateOf(false) }
@@ -604,8 +614,8 @@ fun MusicScreen(
                                             modifier = Modifier.weight(1f)
                                         ) {
                                             Box {
-                                                Image(
-                                                    painter = rememberAsyncImagePainter(track.albumArt),
+                                                AsyncImage(
+                                                    model = track.albumArt,
                                                     contentDescription = track.title,
                                                     contentScale = ContentScale.Crop,
                                                     modifier = Modifier
@@ -881,8 +891,8 @@ fun MusicScreen(
                                     verticalAlignment = Alignment.CenterVertically,
                                     modifier = Modifier.weight(1f)
                                 ) {
-                                    Image(
-                                        painter = rememberAsyncImagePainter(track.albumArt),
+                                    AsyncImage(
+                                        model = track.albumArt,
                                         contentDescription = track.title,
                                         contentScale = ContentScale.Crop,
                                         modifier = Modifier
@@ -970,8 +980,8 @@ fun MusicScreen(
                                     verticalAlignment = Alignment.CenterVertically,
                                     modifier = Modifier.weight(1f)
                                 ) {
-                                    Image(
-                                        painter = rememberAsyncImagePainter(track.albumArt),
+                                    AsyncImage(
+                                        model = track.albumArt,
                                         contentDescription = track.title,
                                         contentScale = ContentScale.Crop,
                                         modifier = Modifier
