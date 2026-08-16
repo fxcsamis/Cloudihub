@@ -1,8 +1,5 @@
 package com.example.ui.screens
 
-import com.lottiefiles.dotlottie.core.compose.ui.DotLottieAnimation
-import com.lottiefiles.dotlottie.core.util.DotLottieSource
-
 import android.app.Activity
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
