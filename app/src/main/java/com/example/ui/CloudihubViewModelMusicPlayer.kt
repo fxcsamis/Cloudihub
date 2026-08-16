@@ -2,6 +2,7 @@ package com.example.ui
 
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 // Music mini-player controls (play/pause/next/previous + the 1s progress ticker
 // coroutine). musicTickerJob was changed from `private` to `internal` on the main
