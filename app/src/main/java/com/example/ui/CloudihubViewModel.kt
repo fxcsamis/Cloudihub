@@ -250,12 +250,26 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
     fun loadHybridFeed() {
         viewModelScope.launch {
             _isLoadingVideos.value = true
-            addLog("Initiating hybrid feed loader...")
-            
-            // Extract country code via device locale to customize region-based trending instantly and offline
+            addLog("Loading local demo video set...")
+
+            // DISABLED (by request): the app only ever shows local demo/sample
+            // videos (Big Buck Bunny, Sintel, etc.) - there's no real account-
+            // specific or live data behind the Piped API servers this used to
+            // contact first. Those 3 mirrors are also all currently dead
+            // (bad SSL cert / DNS failure / HTTP 502 - confirmed via the debug
+            // overlay's live log), so every app launch was spending several
+            // seconds retrying servers that always fail, before landing on
+            // the exact same local dataset it can just load immediately.
+            // Skipping straight to the local set removes that entire delay.
+            _videos.value = getLocalFallbackVideos()
+            extractorModeMsg = "Showing local demo video set"
+            _isLoadingVideos.value = false
+
+            /* --- Previous Piped API network-fetch path, kept here (unused)
+               in case real API-backed trending is wanted again later --- */
+            /*
             val country = try {
                 val localeCountry = java.util.Locale.getDefault().country.uppercase()
-                // Whitelist of well-supported YouTube/Piped region codes
                 val supportedRegions = setOf(
                     "US", "GB", "DE", "FR", "IT", "ES", "JP", "KR", "CA", "IN", "BR", "MX", "RU", "AU", "NL", "PL"
                 )
@@ -268,12 +282,11 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
 
             var successful = false
             var exceptionMsg = ""
-            
+
             for ((index, baseUrl) in PIPED_APIS.withIndex()) {
                 try {
                     addLog("Contacting API Server #${index + 1}: $baseUrl for region: $currentDetectedRegion")
                     val result = withContext(Dispatchers.IO) {
-                        // Query real popular/trending feeds on Piped
                         val request = Request.Builder()
                             .url("$baseUrl/trending?region=$currentDetectedRegion")
                             .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
@@ -295,8 +308,7 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
                 } catch (e: Exception) {
                     exceptionMsg = e.localizedMessage ?: "Unknown connection failure"
                     addLog("Server #${index + 1} regional feed failed: $exceptionMsg")
-                    
-                    // RETRY with region "US" on the SAME server as fallback before jumping to next server!
+
                     if (currentDetectedRegion != "US") {
                         try {
                             addLog("Retrying US region on Server #${index + 1} ($baseUrl)...")
@@ -332,6 +344,7 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
                 extractorModeMsg = "Real-time APIs offline. Active local fallback: $exceptionMsg"
             }
             _isLoadingVideos.value = false
+            */
         }
     }
 
