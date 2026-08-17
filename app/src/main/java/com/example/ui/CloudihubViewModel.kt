@@ -89,8 +89,18 @@ enum class DownloadStatus {
 class CloudihubViewModel(application: Application) : AndroidViewModel(application) {
 
     private val client = OkHttpClient.Builder()
-        .connectTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
-        .readTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+        // PERF FIX: was 15s/15s. The debug overlay's live log showed exactly
+        // what's happening on cold start: the app tries 3 Piped API mirrors
+        // one after another (pipedapi.tokhmi.xyz - bad SSL cert,
+        // api.piped.privacydev.net - DNS doesn't resolve, pipedapi.kavin.rocks
+        // - HTTP 502) before falling back to local data. In this session each
+        // failure happened to be fast, but on a slower/different network a
+        // dead server can hang for the FULL timeout before failing - with 3
+        // servers tried sequentially at 15s each, that's up to 45s of a
+        // busy/janky cold start in the worst case. Capping it lower bounds
+        // that worst case without affecting normal fast responses.
+        .connectTimeout(6, java.util.concurrent.TimeUnit.SECONDS)
+        .readTimeout(6, java.util.concurrent.TimeUnit.SECONDS)
         .writeTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
         .build()
 
@@ -166,8 +176,8 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
         private set
     var extractedVideoForHub by mutableStateOf<CloudVideo?>(null)
         private set
-    var relatedVideos by mutableStateOf<List<CloudVideo>>(emptyList())
-        private set
+    private val _relatedVideos = MutableStateFlow<List<CloudVideo>>(emptyList())
+    val relatedVideos: StateFlow<List<CloudVideo>> = _relatedVideos.asStateFlow()
 
     // --- WATCH LATER LIST ---
     val watchLaterVideos = mutableStateListOf<CloudVideo>()
@@ -381,7 +391,7 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
                 activeStreamingUrl = video.fileUrl
                 isExtracting = false
                 extractorModeMsg = "Direct stream ready"
-                relatedVideos = emptyList()
+                _relatedVideos.value = emptyList()
                 return@launch
             }
 
@@ -546,7 +556,7 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
                     }
                 }
                 if (list.isNotEmpty()) {
-                    relatedVideos = list
+                    _relatedVideos.value = list
                     loadedRelated = true
                     break
                 }
@@ -556,7 +566,7 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
         }
         
         if (!loadedRelated) {
-            relatedVideos = emptyList()
+            _relatedVideos.value = emptyList()
         }
     }
 

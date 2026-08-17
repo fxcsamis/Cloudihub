@@ -34,6 +34,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -188,9 +189,10 @@ fun VideoStreamingPlayer(
     val progressPercent = if (totalSeconds > 0) progressSec.toFloat() / totalSeconds else 0f
 
     // Up Next Video List compilation
-    val upNextList = remember(video.id, viewModel.relatedVideos, viewModel.videos) {
+    val relatedVideosState by viewModel.relatedVideos.collectAsStateWithLifecycle()
+    val upNextList = remember(video.id, relatedVideosState, viewModel.videos) {
         val list = mutableListOf<CloudVideo>()
-        list.addAll(viewModel.relatedVideos)
+        list.addAll(relatedVideosState)
         val feedFallback = viewModel.videos.filter { it.id != video.id && list.none { r -> r.id == it.id } }
         list.addAll(feedFallback)
         if (list.isEmpty()) {
