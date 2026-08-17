@@ -179,6 +179,9 @@ class MainActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Wraps the app's crash handler so a crash's stack trace survives the
+        // process restart and shows up in the on-screen debug panel.
+        com.example.debug.DebugLog.installCrashHandler(this)
         handleWidgetIntent(intent)
         
         // Fullscreen edge-to-edge setup
@@ -275,6 +278,11 @@ class MainActivity : FragmentActivity() {
                     SharedTransitionLayout(modifier = Modifier.fillMaxSize()) {
                         CompositionLocalProvider(LocalSharedTransitionScope provides this) {
                             Box(modifier = Modifier.fillMaxSize()) {
+                                // Always-on-screen performance debug overlay (FPS,
+                                // frame time, memory, jank count, crash log) - zIndex
+                                // keeps it above every screen/dialog regardless of
+                                // where it sits in this Box's child order.
+                                com.example.debug.PerformanceDebugOverlay()
                         // 0. Premium CloudeHub Animated Splash Screen Overlay
                         AnimatedVisibility(
                             visible = showSplashScreen,

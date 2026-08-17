@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,9 +42,10 @@ fun ProfileAvatarWithBadge(
     borderWidth: Dp = 1.5.dp,
     onClick: (() -> Unit)? = null
 ) {
+    val isGoogleSignedIn by viewModel.isGoogleSignedIn.collectAsStateWithLifecycle()
     val avatarUrl = if (viewModel.userProfileAvatar.isNotEmpty()) {
         viewModel.userProfileAvatar
-    } else if (viewModel.isGoogleSignedIn && viewModel.signedInUserPhoto.isNotEmpty()) {
+    } else if (isGoogleSignedIn && viewModel.signedInUserPhoto.isNotEmpty()) {
         viewModel.signedInUserPhoto
     } else {
         "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300"

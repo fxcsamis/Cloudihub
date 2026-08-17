@@ -119,6 +119,10 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
         if (diagnosticLogs.size > 200) {
             diagnosticLogs.removeAt(diagnosticLogs.size - 1)
         }
+        // Also feeds the on-screen performance debug overlay's live log, so
+        // every existing diagnostic call site (network/search/extraction
+        // failures) shows up there in real time without touching each one.
+        com.example.debug.DebugLog.log(msg)
     }
 
     // --- MODULE 1 & 2: Shimmer Loading & Google Sign In / Hybrid Algorithm ---
@@ -142,8 +146,8 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
     private val visitedTabs = mutableSetOf<NavigationTab>(NavigationTab.Home)
     var currentDetectedRegion by mutableStateOf("US")
         private set
-    var isGoogleSignedIn by mutableStateOf(false)
-        private set
+    private val _isGoogleSignedIn = MutableStateFlow(false)
+    val isGoogleSignedIn: StateFlow<Boolean> = _isGoogleSignedIn.asStateFlow()
     var signedInUserEmail by mutableStateOf("")
         private set
     var signedInUserName by mutableStateOf("")
@@ -196,7 +200,7 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     fun signInWithGoogle(name: String, email: String, photo: String, token: String) {
-        isGoogleSignedIn = true
+        _isGoogleSignedIn.value = true
         signedInUserName = name
         signedInUserEmail = email
         signedInUserPhoto = photo
@@ -215,7 +219,7 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     fun signOutGoogle() {
-        isGoogleSignedIn = false
+        _isGoogleSignedIn.value = false
         signedInUserName = ""
         signedInUserEmail = ""
         signedInUserPhoto = ""
@@ -842,7 +846,7 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
         
         // Load persisted Google Sign-In state if any
         val sp = getApplication<Application>().getSharedPreferences("user_prefs", android.content.Context.MODE_PRIVATE)
-        isGoogleSignedIn = sp.getBoolean("is_signed_in", false)
+        _isGoogleSignedIn.value = sp.getBoolean("is_signed_in", false)
         signedInUserName = sp.getString("user_name", "") ?: ""
         signedInUserEmail = sp.getString("user_email", "") ?: ""
         signedInUserPhoto = sp.getString("user_photo", "") ?: ""
@@ -1360,7 +1364,7 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
         userProfileAvatar = avatar.trim().ifEmpty { "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300" }
 
         // Also update signedInUserName/Email if applicable
-        if (isGoogleSignedIn) {
+        if (_isGoogleSignedIn.value) {
             signedInUserName = userProfileFullName
             signedInUserEmail = userProfileEmail
             signedInUserPhoto = userProfileAvatar

@@ -34,6 +34,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
@@ -311,6 +312,7 @@ fun MainProfileContent(
     modifier: Modifier = Modifier
 ) {
     val isDark = viewModel.isDarkTheme
+    val isGoogleSignedIn by viewModel.isGoogleSignedIn.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
     val storageInfo = viewModel.getDeviceStorageInfo()
     val context = LocalContext.current
@@ -331,7 +333,7 @@ fun MainProfileContent(
                 .verticalScroll(scrollState)
         ) {
             // --- PROFILE HEADER & SIGNUP OPTION ---
-        val isSigned = viewModel.isGoogleSignedIn
+        val isSigned = isGoogleSignedIn
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -1023,15 +1025,15 @@ fun MainProfileContent(
         ) {
             Column {
                 ProfileMenuItem(
-                    icon = if (viewModel.isGoogleSignedIn) Icons.Default.Star else Icons.Default.Lock,
+                    icon = if (isGoogleSignedIn) Icons.Default.Star else Icons.Default.Lock,
                     title = "Prime Level & Badges Shop",
-                    subtitle = if (viewModel.isGoogleSignedIn)
+                    subtitle = if (isGoogleSignedIn)
                         "Active: ${viewModel.userPrimeLevel} • Upgrade badges & unlock perks"
                     else
                         "🔒 Locked • Sign in to view level, balance & badges",
-                    iconTint = if (viewModel.isGoogleSignedIn) Color(0xFFD97706) else Color(0xFF64748B),
+                    iconTint = if (isGoogleSignedIn) Color(0xFFD97706) else Color(0xFF64748B),
                     onClick = {
-                        if (viewModel.isGoogleSignedIn) {
+                        if (isGoogleSignedIn) {
                             viewModel.showPrimeBadgesDialog = true
                         } else {
                             viewModel.showSignupScreen = true
@@ -1125,7 +1127,7 @@ fun MainProfileContent(
         Spacer(modifier = Modifier.height(24.dp))
         TextButton(
             onClick = {
-                if (viewModel.isGoogleSignedIn) {
+                if (isGoogleSignedIn) {
                     viewModel.signOutGoogle()
                     Toast.makeText(context, "Logged out successfully", Toast.LENGTH_SHORT).show()
                 } else {
@@ -1141,14 +1143,14 @@ fun MainProfileContent(
                 horizontalArrangement = Arrangement.Center
             ) {
                 Icon(
-                    imageVector = if (viewModel.isGoogleSignedIn) Icons.Default.ExitToApp else Icons.Default.Login,
-                    contentDescription = if (viewModel.isGoogleSignedIn) "Logout" else "Login / Sign Up",
+                    imageVector = if (isGoogleSignedIn) Icons.Default.ExitToApp else Icons.Default.Login,
+                    contentDescription = if (isGoogleSignedIn) "Logout" else "Login / Sign Up",
                     tint = Color(0xFFEF4444),
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = if (viewModel.isGoogleSignedIn) "Logout" else "Log In / Sign Up",
+                    text = if (isGoogleSignedIn) "Logout" else "Log In / Sign Up",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFFEF4444)
