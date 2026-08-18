@@ -1188,7 +1188,7 @@ fun CreateVaultFolderDialog(
                 contentAlignment = Alignment.Center
             ) {
                 AsyncImage(
-                    model = model = previewImageUrl,
+                    model = previewImageUrl,
                     contentDescription = "Folder Preview Image",
                     modifier = Modifier
                         .fillMaxSize()
@@ -1346,7 +1346,7 @@ fun VaultFolderDetailView(
                 Spacer(modifier = Modifier.width(12.dp))
 
                 AsyncImage(
-                    model = model = folder.imageUrl,
+                    model = folder.imageUrl,
                     contentDescription = null,
                     modifier = Modifier.size(44.dp),
                     contentScale = ContentScale.Fit
@@ -1739,7 +1739,7 @@ fun PrivateVaultScreen(viewModel: CloudihubViewModel) {
                                 contentAlignment = Alignment.Center
                             ) {
                                 AsyncImage(
-                                    model = model = folder.imageUrl,
+                                    model = folder.imageUrl,
                                     contentDescription = folder.name,
                                     modifier = Modifier.size(90.dp),
                                     contentScale = ContentScale.Fit

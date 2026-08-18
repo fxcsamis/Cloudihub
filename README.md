@@ -1,22 +1,19 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# Cloudihub
 
-# Run and deploy your AI Studio app
+A modern, cloud-themed media app with custom organic cloud shapes, a frosted glassmorphic bottom navigation bar, a download hub, voice-activated search, and integrated video, music, and web browsing.
 
-This contains everything you need to run your app locally.
+## Getting Started
 
-View your app in AI Studio: https://ai.studio/apps/a38e8f4a-bb4f-4b10-a7a3-2615eaf9794a
+**Prerequisites:** [Android Studio](https://developer.android.com/studio)
 
-## Run Locally
+1. Open Android Studio.
+2. Select **Open** and choose the directory containing this project.
+3. Let Android Studio sync and resolve dependencies.
+4. Create a file named `.env` in the project root and set `GEMINI_API_KEY` to your own Gemini API key (see `.env.example` for the expected format).
+5. Run the app on an emulator or physical device.
 
-**Prerequisites:**  [Android Studio](https://developer.android.com/studio)
+## Project Structure
 
-
-1. Open Android Studio
-2. Select **Open** and choose the directory containing this project
-3. Allow Android Studio to fix any incompatibilities as it imports the project.
-4. Create a file named `.env` in the project directory and set `GEMINI_API_KEY` in that file to your Gemini API key (see `.env.example` for an example)
-5. Remove this line from the app's `build.gradle.kts` file: `signingConfig = signingConfigs.getByName("debugConfig")`
-6. Run the app on an emulator or physical device
-7. If you have already published your app in AI Studio, please [request upload key reset](https://support.google.com/googleplay/android-developer/answer/9842756#zippy=%2Crequest-an-upload-key-reset) in Google Play Console.
+- `app/src/main/java/com/example/ui/` — screens, components, and the app's view models
+- `app/src/main/java/com/example/widget/` — home screen widget provider
+- `app/src/main/res/` — layouts, drawables, and other Android resources
