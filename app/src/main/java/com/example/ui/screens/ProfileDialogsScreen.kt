@@ -54,6 +54,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import com.airbnb.lottie.compose.*
 import com.example.ui.components.LOTTIE_OVERLAY_1_URL
 import androidx.compose.foundation.BorderStroke
@@ -287,7 +288,7 @@ fun LinkedDevicesScreen(viewModel: CloudihubViewModel) {
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(viewModel.linkedDevices) { device ->
+            items(viewModel.linkedDevices, key = { it.hashCode() }) { device ->
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -316,8 +317,8 @@ fun LinkedDevicesScreen(viewModel: CloudihubViewModel) {
                                     .border(1.dp, Color(0xFFE2E8F0), RoundedCornerShape(12.dp)),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Image(
-                                    painter = rememberAsyncImagePainter(device.imageUrl),
+                                AsyncImage(
+                                    model = device.imageUrl,
                                     contentDescription = "Device Image",
                                     contentScale = ContentScale.Crop,
                                     modifier = Modifier
@@ -464,8 +465,8 @@ fun LinkedDevicesScreen(viewModel: CloudihubViewModel) {
                                 .border(1.dp, Color(0xFFE2E8F0), RoundedCornerShape(12.dp)),
                             contentAlignment = Alignment.Center
                         ) {
-                            Image(
-                                painter = rememberAsyncImagePainter(deviceToLogOut?.imageUrl),
+                            AsyncImage(
+                                model = deviceToLogOut?.imageUrl,
                                 contentDescription = "Device Image",
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
@@ -773,7 +774,7 @@ fun OfflineFoldersScreen(viewModel: CloudihubViewModel) {
                         .padding(horizontal = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
-                    items(folders) { folder ->
+                    items(folders, key = { it.hashCode() }) { folder ->
                         val (name, desc, tag) = folder
                         Card(
                             modifier = Modifier
@@ -864,7 +865,7 @@ fun OfflineFoldersScreen(viewModel: CloudihubViewModel) {
                 if (folderTag == "backup" || folderTag == "cache") {
                     val staticList = if (folderTag == "backup") portalBackups else tempCaches
                     LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                        items(staticList) { item ->
+                        items(staticList, key = { it.hashCode() }) { item ->
                             val (filename, size) = item
                             Card(
                                 modifier = Modifier
@@ -936,7 +937,7 @@ fun OfflineFoldersScreen(viewModel: CloudihubViewModel) {
                     }
                 } else {
                     LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                        items(itemsList) { item ->
+                        items(itemsList, key = { it.hashCode() }) { item ->
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()

@@ -74,6 +74,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import com.example.ui.CloudihubViewModel
 import com.example.ui.MusicTrack
 
@@ -209,8 +210,8 @@ fun FullMusicPlayerOverlay(
                             )
                         }
                         Spacer(modifier = Modifier.width(6.dp))
-                        Image(
-                            painter = rememberAsyncImagePainter(activeTrack.albumArt),
+                        AsyncImage(
+                            model = activeTrack.albumArt,
                             contentDescription = activeTrack.title,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
@@ -350,8 +351,8 @@ fun FullMusicPlayerOverlay(
                             .shadow(14.dp, RoundedCornerShape(22.dp))
                             .clip(RoundedCornerShape(22.dp))
                     ) {
-                        Image(
-                            painter = rememberAsyncImagePainter(activeTrack.albumArt),
+                        AsyncImage(
+                            model = activeTrack.albumArt,
                             contentDescription = activeTrack.title,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier.fillMaxSize()
@@ -597,8 +598,8 @@ fun FullMusicPlayerOverlay(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Box {
-                                Image(
-                                    painter = rememberAsyncImagePainter(activeTrack.albumArt),
+                                AsyncImage(
+                                    model = activeTrack.albumArt,
                                     contentDescription = activeTrack.artist,
                                     contentScale = ContentScale.Crop,
                                     modifier = Modifier
@@ -755,8 +756,8 @@ fun FullMusicPlayerOverlay(
                                     .padding(horizontal = 14.dp, vertical = 10.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Image(
-                                    painter = rememberAsyncImagePainter(popTrack.albumArt),
+                                AsyncImage(
+                                    model = popTrack.albumArt,
                                     contentDescription = popTrack.title,
                                     contentScale = ContentScale.Crop,
                                     modifier = Modifier
@@ -826,7 +827,7 @@ fun FullMusicPlayerOverlay(
                         horizontalArrangement = Arrangement.spacedBy(14.dp),
                         contentPadding = PaddingValues(horizontal = 20.dp)
                     ) {
-                        items(sampleBanglaPlaylist.tracks.take(4)) { albumTrack ->
+                        items(sampleBanglaPlaylist.tracks.take(4), key = { it.hashCode() }) { albumTrack ->
                             Surface(
                                 shape = RoundedCornerShape(18.dp),
                                 color = Color.White,
@@ -841,8 +842,8 @@ fun FullMusicPlayerOverlay(
                                     }
                             ) {
                                 Column(modifier = Modifier.padding(10.dp)) {
-                                    Image(
-                                        painter = rememberAsyncImagePainter(albumTrack.albumArt),
+                                    AsyncImage(
+                                        model = albumTrack.albumArt,
                                         contentDescription = albumTrack.title,
                                         contentScale = ContentScale.Crop,
                                         modifier = Modifier

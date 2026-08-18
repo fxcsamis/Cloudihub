@@ -55,6 +55,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import com.airbnb.lottie.compose.*
 import com.example.ui.components.LOTTIE_OVERLAY_1_URL
 import androidx.compose.foundation.BorderStroke
@@ -313,6 +314,9 @@ fun MainProfileContent(
 ) {
     val isDark = viewModel.isDarkTheme
     val isGoogleSignedIn by viewModel.isGoogleSignedIn.collectAsStateWithLifecycle()
+    val signedInUserPhoto by viewModel.signedInUserPhoto.collectAsStateWithLifecycle()
+    val signedInUserName by viewModel.signedInUserName.collectAsStateWithLifecycle()
+    val signedInUserEmail by viewModel.signedInUserEmail.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
     val storageInfo = viewModel.getDeviceStorageInfo()
     val context = LocalContext.current
@@ -363,12 +367,12 @@ fun MainProfileContent(
                             .padding(4.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        Image(
-                            painter = rememberAsyncImagePainter(
+                        AsyncImage(
+                            model =
                                 if (viewModel.userProfileAvatar.isNotEmpty()) viewModel.userProfileAvatar
-                                else if (isSigned && viewModel.signedInUserPhoto.isNotEmpty()) viewModel.signedInUserPhoto
+                                else if (isSigned && signedInUserPhoto.isNotEmpty()) signedInUserPhoto
                                 else "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300"
-                            ),
+                            ,
                             contentDescription = "Profile Avatar",
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
@@ -398,8 +402,8 @@ fun MainProfileContent(
                                 },
                             contentAlignment = Alignment.Center
                         ) {
-                            Image(
-                                painter = rememberAsyncImagePainter(activeBadge.imageUrl),
+                            AsyncImage(
+                                model = activeBadge.imageUrl,
                                 contentDescription = activeBadge.levelName,
                                 contentScale = ContentScale.Fit,
                                 modifier = Modifier.fillMaxSize()
@@ -412,13 +416,13 @@ fun MainProfileContent(
 
                 // 2. NAME, USERNAME, EMAIL SECTION
                 val displayName = viewModel.userProfileFullName.ifEmpty { 
-                    viewModel.signedInUserName.ifEmpty { "Alex Skyward" } 
+                    signedInUserName.ifEmpty { "Alex Skyward" } 
                 }
                 val displayUsername = viewModel.userProfileUsername.ifEmpty { 
-                    if (viewModel.signedInUserName.isNotEmpty()) "@${viewModel.signedInUserName.lowercase().replace(" ", "_")}" else "@alexskyward" 
+                    if (signedInUserName.isNotEmpty()) "@${signedInUserName.lowercase().replace(" ", "_")}" else "@alexskyward" 
                 }
                 val displayEmail = viewModel.userProfileEmail.ifEmpty { 
-                    viewModel.signedInUserEmail.ifEmpty { "alex.skyward@cloudihub.io" } 
+                    signedInUserEmail.ifEmpty { "alex.skyward@cloudihub.io" } 
                 }
 
                 Text(
@@ -538,7 +542,7 @@ fun MainProfileContent(
                         verticalAlignment = Alignment.CenterVertically,
                         contentPadding = PaddingValues(vertical = 4.dp)
                     ) {
-                        items(viewModel.availablePrimeBadges) { badge ->
+                        items(viewModel.availablePrimeBadges, key = { it.hashCode() }) { badge ->
                             val isUnlocked = isSigned && viewModel.unlockedBadges.any { it.id == badge.id }
                             val isActive = isSigned && viewModel.userPrimeLevel == badge.levelName
 
@@ -563,8 +567,8 @@ fun MainProfileContent(
                                     modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp)
                                 ) {
                                     Box(contentAlignment = Alignment.Center) {
-                                        Image(
-                                            painter = rememberAsyncImagePainter(badge.imageUrl),
+                                        AsyncImage(
+                                            model = badge.imageUrl,
                                             contentDescription = badge.badgeTitle,
                                             contentScale = ContentScale.Fit,
                                             colorFilter = if (!isSigned) ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) }) else null,
@@ -686,8 +690,8 @@ fun MainProfileContent(
                                     .padding(6.dp),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Image(
-                                    painter = rememberAsyncImagePainter(activeBadge.imageUrl),
+                                AsyncImage(
+                                    model = activeBadge.imageUrl,
                                     contentDescription = activeBadge.levelName,
                                     contentScale = ContentScale.Fit,
                                     colorFilter = if (!isSigned) ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) }) else null,

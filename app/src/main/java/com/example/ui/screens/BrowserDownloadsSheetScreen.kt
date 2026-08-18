@@ -180,7 +180,7 @@ fun BrowserDownloadsSheet(
                         .heightIn(max = 320.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    items(viewModel.downloadItems) { item ->
+                    items(viewModel.downloadItems, key = { it.hashCode() }) { item ->
                         Surface(
                             modifier = Modifier.fillMaxWidth(),
                             color = Color(0xFFF8FAFC),

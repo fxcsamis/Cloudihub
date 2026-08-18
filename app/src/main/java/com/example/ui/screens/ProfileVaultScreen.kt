@@ -54,6 +54,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import com.airbnb.lottie.compose.*
 import com.example.ui.components.LOTTIE_OVERLAY_1_URL
 import androidx.compose.foundation.BorderStroke
@@ -1186,8 +1187,8 @@ fun CreateVaultFolderDialog(
                     .border(1.dp, if (isDark) Color(0xFF334155) else Color(0xFFCBD5E1), RoundedCornerShape(20.dp)),
                 contentAlignment = Alignment.Center
             ) {
-                Image(
-                    painter = rememberAsyncImagePainter(model = previewImageUrl),
+                AsyncImage(
+                    model = model = previewImageUrl,
                     contentDescription = "Folder Preview Image",
                     modifier = Modifier
                         .fillMaxSize()
@@ -1228,7 +1229,7 @@ fun CreateVaultFolderDialog(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                items(types) { type ->
+                items(types, key = { it.hashCode() }) { type ->
                     val isSelected = selectedType == type
                     FilterChip(
                         selected = isSelected,
@@ -1344,8 +1345,8 @@ fun VaultFolderDetailView(
 
                 Spacer(modifier = Modifier.width(12.dp))
 
-                Image(
-                    painter = rememberAsyncImagePainter(model = folder.imageUrl),
+                AsyncImage(
+                    model = model = folder.imageUrl,
                     contentDescription = null,
                     modifier = Modifier.size(44.dp),
                     contentScale = ContentScale.Fit
@@ -1434,7 +1435,7 @@ fun VaultFolderDetailView(
                         .fillMaxWidth()
                         .weight(1f)
                 ) {
-                    items(folderItems) { item ->
+                    items(folderItems, key = { it.hashCode() }) { item ->
                         Card(
                             shape = RoundedCornerShape(16.dp),
                             colors = CardDefaults.cardColors(containerColor = cardBg),
@@ -1709,7 +1710,7 @@ fun PrivateVaultScreen(viewModel: CloudihubViewModel) {
                     .weight(1f)
             ) {
                 // Existing Folders
-                items(viewModel.vaultFolders) { folder ->
+                items(viewModel.vaultFolders, key = { it.hashCode() }) { folder ->
                     val itemCount = viewModel.vaultItems.count { it.folderId == folder.id || it.type == folder.type }
 
                     Card(
@@ -1737,8 +1738,8 @@ fun PrivateVaultScreen(viewModel: CloudihubViewModel) {
                                     .fillMaxWidth(),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Image(
-                                    painter = rememberAsyncImagePainter(model = folder.imageUrl),
+                                AsyncImage(
+                                    model = model = folder.imageUrl,
                                     contentDescription = folder.name,
                                     modifier = Modifier.size(90.dp),
                                     contentScale = ContentScale.Fit

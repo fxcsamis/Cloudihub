@@ -55,6 +55,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import com.airbnb.lottie.compose.*
 import com.example.ui.components.LOTTIE_OVERLAY_1_URL
 import androidx.compose.foundation.BorderStroke
@@ -163,8 +164,8 @@ fun WatchLaterScreen(viewModel: CloudihubViewModel) {
                             .background(Color(0xFFFFF7ED)),
                         contentAlignment = Alignment.Center
                     ) {
-                        Image(
-                            painter = rememberAsyncImagePainter("https://i.postimg.cc/G2tMPzZm/Fast-Delivery-icon-concept-in-black-duo-line-color.jpg"),
+                        AsyncImage(
+                            model = "https://i.postimg.cc/G2tMPzZm/Fast-Delivery-icon-concept-in-black-duo-line-color.jpg",
                             contentDescription = "Watch Later Empty",
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
@@ -215,8 +216,8 @@ fun WatchLaterScreen(viewModel: CloudihubViewModel) {
                                     .size(width = 100.dp, height = 62.dp)
                                     .clip(RoundedCornerShape(10.dp))
                             ) {
-                                Image(
-                                    painter = rememberAsyncImagePainter(video.imageUrl),
+                                AsyncImage(
+                                    model = video.imageUrl,
                                     contentDescription = video.title,
                                     contentScale = ContentScale.Crop,
                                     modifier = Modifier.fillMaxSize()
@@ -1158,8 +1159,8 @@ fun ModernPrimeBadgesBottomSheet(
                                                 .padding(6.dp),
                                             contentAlignment = Alignment.Center
                                         ) {
-                                            Image(
-                                                painter = rememberAsyncImagePainter(badge.imageUrl),
+                                            AsyncImage(
+                                                model = badge.imageUrl,
                                                 contentDescription = badge.levelName,
                                                 contentScale = ContentScale.Fit,
                                                 modifier = Modifier.fillMaxSize()

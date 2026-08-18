@@ -242,7 +242,7 @@ fun PerformanceDebugOverlay() {
                             )
                         }
                     } else {
-                        items(logEntries.asReversed()) { entry ->
+                        items(logEntries.asReversed(), key = { it.hashCode() }) { entry ->
                             Text(
                                 text = entry,
                                 color = Color(0xFFCBD5E1),

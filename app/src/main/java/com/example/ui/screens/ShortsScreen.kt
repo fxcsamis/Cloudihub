@@ -51,6 +51,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import com.example.ui.CloudVideo
 import com.example.ui.CloudihubViewModel
 import com.example.ui.components.ExoPlayerSurface
@@ -194,8 +195,8 @@ private fun ShortItemPage(
                 modifier = Modifier.fillMaxSize()
             )
         } else {
-            Image(
-                painter = rememberAsyncImagePainter(video.imageUrl),
+            AsyncImage(
+                model = video.imageUrl,
                 contentDescription = video.title,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
@@ -392,8 +393,8 @@ private fun ShortItemPage(
                     .background(Color.Black),
                 contentAlignment = Alignment.Center
             ) {
-                Image(
-                    painter = rememberAsyncImagePainter(video.imageUrl),
+                AsyncImage(
+                    model = video.imageUrl,
                     contentDescription = "Sound Disc",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
@@ -413,8 +414,8 @@ private fun ShortItemPage(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Image(
-                    painter = rememberAsyncImagePainter(video.imageUrl),
+                AsyncImage(
+                    model = video.imageUrl,
                     contentDescription = video.creator,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier

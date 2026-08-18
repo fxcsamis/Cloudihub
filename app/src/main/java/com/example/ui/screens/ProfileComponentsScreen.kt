@@ -52,6 +52,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import com.airbnb.lottie.compose.*
 import com.example.ui.components.LOTTIE_OVERLAY_1_URL
 import androidx.compose.foundation.BorderStroke
@@ -177,8 +178,8 @@ fun ProfileMenuItem(
                     modifier = Modifier.size(36.dp)
                 )
             } else if (!imageUrl.isNullOrEmpty()) {
-                Image(
-                    painter = rememberAsyncImagePainter(imageUrl),
+                AsyncImage(
+                    model = imageUrl,
                     contentDescription = title,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier

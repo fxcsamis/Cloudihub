@@ -43,6 +43,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import com.example.ui.CloudihubViewModel
 
 enum class PasswordStrength { WEAK, MEDIUM, STRONG }
@@ -206,8 +207,8 @@ fun SignupScreen(
                                     .padding(2.dp),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Image(
-                                    painter = rememberAsyncImagePainter("https://i.postimg.cc/c4jdZGk4/Cloude-Hub.png"),
+                                AsyncImage(
+                                    model = "https://i.postimg.cc/c4jdZGk4/Cloude-Hub.png",
                                     contentDescription = "CloudeHub Logo",
                                     contentScale = ContentScale.Crop,
                                     modifier = Modifier
@@ -237,8 +238,8 @@ fun SignupScreen(
                                     .border(2.dp, Color(0xFFFF0000), CircleShape),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Image(
-                                    painter = rememberAsyncImagePainter("https://i.postimg.cc/V6d2VyZH/Snapchat.jpg"),
+                                AsyncImage(
+                                    model = "https://i.postimg.cc/V6d2VyZH/Snapchat.jpg",
                                     contentDescription = "YouTube Logo",
                                     contentScale = ContentScale.Crop,
                                     modifier = Modifier
@@ -363,8 +364,8 @@ fun SignupScreen(
                                     .border(1.5.dp, Color(0xFF0284C7), CircleShape),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Image(
-                                    painter = rememberAsyncImagePainter("https://i.postimg.cc/c4jdZGk4/Cloude-Hub.png"),
+                                AsyncImage(
+                                    model = "https://i.postimg.cc/c4jdZGk4/Cloude-Hub.png",
                                     contentDescription = "CloudeHub Logo",
                                     contentScale = ContentScale.Crop,
                                     modifier = Modifier

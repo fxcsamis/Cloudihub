@@ -43,6 +43,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import com.airbnb.lottie.compose.*
 import com.example.ui.CloudVideo
 import com.example.ui.CloudihubViewModel
@@ -527,8 +528,8 @@ fun FullChatMessageItem(
                                     modifier = Modifier.padding(10.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Image(
-                                        painter = rememberAsyncImagePainter(video.imageUrl),
+                                    AsyncImage(
+                                        model = video.imageUrl,
                                         contentDescription = video.title,
                                         contentScale = ContentScale.Crop,
                                         modifier = Modifier

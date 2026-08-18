@@ -74,6 +74,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import com.example.ui.CloudihubViewModel
 import com.example.ui.MusicTrack
 
@@ -108,16 +109,16 @@ fun CommunityCollageCard(
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
                 Row(modifier = Modifier.weight(1f)) {
-                    Image(
-                        painter = rememberAsyncImagePainter(images.getOrNull(0) ?: ""),
+                    AsyncImage(
+                        model = images.getOrNull(0) ?: "",
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxHeight()
                     )
-                    Image(
-                        painter = rememberAsyncImagePainter(images.getOrNull(1) ?: ""),
+                    AsyncImage(
+                        model = images.getOrNull(1) ?: "",
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
@@ -126,16 +127,16 @@ fun CommunityCollageCard(
                     )
                 }
                 Row(modifier = Modifier.weight(1f)) {
-                    Image(
-                        painter = rememberAsyncImagePainter(images.getOrNull(2) ?: ""),
+                    AsyncImage(
+                        model = images.getOrNull(2) ?: "",
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxHeight()
                     )
-                    Image(
-                        painter = rememberAsyncImagePainter(images.getOrNull(3) ?: ""),
+                    AsyncImage(
+                        model = images.getOrNull(3) ?: "",
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
@@ -182,8 +183,8 @@ fun MixCard(
                 .shadow(2.dp, RoundedCornerShape(12.dp))
                 .clip(RoundedCornerShape(12.dp))
         ) {
-            Image(
-                painter = rememberAsyncImagePainter(imageUrl),
+            AsyncImage(
+                model = imageUrl,
                 contentDescription = title,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()

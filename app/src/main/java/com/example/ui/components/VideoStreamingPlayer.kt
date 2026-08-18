@@ -62,6 +62,7 @@ import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieClipSpec
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -86,10 +87,11 @@ fun VideoStreamingPlayer(
     animatedVisibilityScope: AnimatedVisibilityScope,
     modifier: Modifier = Modifier
 ) {
-    val video = viewModel.playingVideo ?: return
-    val streamUrl = viewModel.activeStreamingUrl
-    val extractorMsg = viewModel.extractorModeMsg
-    val isExtracting = viewModel.isExtracting
+    val playingVideoState by viewModel.playingVideo.collectAsStateWithLifecycle()
+    val video = playingVideoState ?: return
+    val streamUrl by viewModel.activeStreamingUrl.collectAsStateWithLifecycle()
+    val extractorMsg by viewModel.extractorModeMsg.collectAsStateWithLifecycle()
+    val isExtracting by viewModel.isExtracting.collectAsStateWithLifecycle()
     val downloads by viewModel.downloads.collectAsState()
     val isVideoDownloading = downloads.any { it.videoId == video.id && (it.status == com.example.ui.DownloadStatus.DOWNLOADING || it.status == com.example.ui.DownloadStatus.QUEUED) }
 
@@ -297,8 +299,8 @@ fun VideoStreamingPlayer(
                             modifier = Modifier.fillMaxSize()
                         )
                     } else {
-                        Image(
-                            painter = rememberAsyncImagePainter(video.imageUrl),
+                        AsyncImage(
+                            model = video.imageUrl,
                             contentDescription = video.title,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier.fillMaxSize()
@@ -455,8 +457,8 @@ fun VideoStreamingPlayer(
                     ) {
                         if (isAudioMode) {
                             // Audio Mode View: Video Thumbnail + Dark Shadow Overlay + Center Lottie + Left Buttons
-                            Image(
-                                painter = rememberAsyncImagePainter(video.imageUrl),
+                            AsyncImage(
+                                model = video.imageUrl,
                                 contentDescription = video.title,
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier.fillMaxSize()
@@ -841,8 +843,8 @@ fun VideoStreamingPlayer(
                                                 }
                                             )
                                     ) {
-                                        Image(
-                                            painter = rememberAsyncImagePainter(video.imageUrl),
+                                        AsyncImage(
+                                            model = video.imageUrl,
                                             contentDescription = video.creator,
                                             contentScale = ContentScale.Crop,
                                             modifier = Modifier
@@ -1339,8 +1341,8 @@ fun UpNextLargeVideoCard(
                     .background(Color(0xFFF1F5F9)),
                 contentAlignment = Alignment.Center
             ) {
-                Image(
-                    painter = rememberAsyncImagePainter(video.imageUrl),
+                AsyncImage(
+                    model = video.imageUrl,
                     contentDescription = video.title,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
@@ -1387,8 +1389,8 @@ fun UpNextLargeVideoCard(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.Top
             ) {
-                Image(
-                    painter = rememberAsyncImagePainter(video.imageUrl),
+                AsyncImage(
+                    model = video.imageUrl,
                     contentDescription = video.creator,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier

@@ -217,6 +217,7 @@ fun HomeScreen(
     // PILOT: isLoadingVideos is now a StateFlow - collected lifecycle-aware so
     // this pauses when the user isn't on the Home tab instead of always running.
     val isLoadingVideosState by viewModel.isLoadingVideos.collectAsStateWithLifecycle()
+    val playingVideoState by viewModel.playingVideo.collectAsStateWithLifecycle()
     val activeDownloads by viewModel.downloads.collectAsState()
     val activeCount = activeDownloads.count { it.status == com.example.ui.DownloadStatus.DOWNLOADING || it.status == com.example.ui.DownloadStatus.QUEUED }
 
@@ -385,7 +386,7 @@ fun HomeScreen(
                                 video = video,
                                 isWatchLater = viewModel.isWatchLater(video.id),
                                 isDownloading = isVideoDownloading,
-                                isCurrentlyPlaying = viewModel.playingVideo?.id == video.id,
+                                isCurrentlyPlaying = playingVideoState?.id == video.id,
                                 onWatchLaterClick = { viewModel.toggleWatchLater(video) },
                                 onDownloadClick = { selectedVideoToDownload = video },
                                 onMoreOptionsClick = { selectedVideoForMoreOptions = video },
@@ -1492,8 +1493,8 @@ fun ShareVideoBottomSheet(
                             .background(Color(0xFF0284C7)),
                         contentAlignment = Alignment.Center
                     ) {
-                        Image(
-                            painter = rememberAsyncImagePainter(CUSTOM_SHARE_ICON_URL),
+                        AsyncImage(
+                            model = CUSTOM_SHARE_ICON_URL,
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
@@ -2140,8 +2141,8 @@ private fun DownloadOptionItemRow(
 
 @Composable
 fun ShortsLogoIcon(modifier: Modifier = Modifier) {
-    Image(
-        painter = rememberAsyncImagePainter("https://i.postimg.cc/KvTkCxmW/You-Tube-Shorts-Logo-PNG-Transparent-(1).jpg"),
+    AsyncImage(
+        model = "https://i.postimg.cc/KvTkCxmW/You-Tube-Shorts-Logo-PNG-Transparent-(1).jpg",
         contentDescription = "YouTube Shorts Logo",
         contentScale = ContentScale.Fit,
         modifier = modifier
@@ -2151,8 +2152,8 @@ fun ShortsLogoIcon(modifier: Modifier = Modifier) {
 
 @Composable
 fun LiveLogoIcon(modifier: Modifier = Modifier) {
-    Image(
-        painter = rememberAsyncImagePainter("https://i.postimg.cc/HsWXKjSW/Live-icon-PNG-Transparent-Live-logo-(1).jpg"),
+    AsyncImage(
+        model = "https://i.postimg.cc/HsWXKjSW/Live-icon-PNG-Transparent-Live-logo-(1).jpg",
         contentDescription = "Live Logo",
         contentScale = ContentScale.Fit,
         modifier = modifier
@@ -2350,6 +2351,7 @@ fun CompactProfilePopupDialog(
     viewModel: CloudihubViewModel,
     onDismiss: () -> Unit
 ) {
+    val signedInUserName by viewModel.signedInUserName.collectAsStateWithLifecycle()
     androidx.compose.ui.window.Dialog(onDismissRequest = onDismiss) {
         Card(
             modifier = Modifier
@@ -2405,7 +2407,7 @@ fun CompactProfilePopupDialog(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = viewModel.signedInUserName.ifEmpty { "Shanto" },
+                        text = signedInUserName.ifEmpty { "Shanto" },
                         fontSize = 20.sp,
                         fontWeight = FontWeight.ExtraBold,
                         color = Color(0xFF0F172A)

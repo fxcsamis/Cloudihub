@@ -30,6 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 
 /**
  * Lightweight, CLOUDIHUB-branded full-screen loading state shown while a
@@ -72,8 +73,8 @@ fun CloudihubNavigationLoadingOverlay(modifier: Modifier = Modifier) {
         ) {
             // Brand logo (same asset as splash screen, smaller here since this
             // shows briefly and frequently rather than once per app launch)
-            Image(
-                painter = rememberAsyncImagePainter(com.example.R.drawable.cloudihub_logo_1784004021392),
+            AsyncImage(
+                model = com.example.R.drawable.cloudihub_logo_1784004021392,
                 contentDescription = "CLOUDIHUB",
                 contentScale = ContentScale.Fit,
                 modifier = Modifier

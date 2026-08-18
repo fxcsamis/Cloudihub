@@ -25,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,6 +40,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import com.example.ui.CloudihubViewModel
 import kotlin.math.roundToInt
 
@@ -49,9 +51,10 @@ fun MusicBubblePlayer(
 ) {
     val currentTrack = viewModel.currentTrack
     val isPlaying = viewModel.isPlaying
+    val activeTab by viewModel.activeTab.collectAsStateWithLifecycle()
 
     // Only show bubble if music is actively playing and we are not on the Music screen
-    if (!isPlaying || viewModel.activeTab == NavigationTab.Music) {
+    if (!isPlaying || activeTab == NavigationTab.Music) {
         return
     }
 
@@ -110,8 +113,8 @@ fun MusicBubblePlayer(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                Image(
-                    painter = rememberAsyncImagePainter(currentTrack.imageUrl),
+                AsyncImage(
+                    model = currentTrack.imageUrl,
                     contentDescription = currentTrack.title,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -149,8 +152,8 @@ fun MusicBubblePlayer(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Spinning mini artwork
-                Image(
-                    painter = rememberAsyncImagePainter(currentTrack.imageUrl),
+                AsyncImage(
+                    model = currentTrack.imageUrl,
                     contentDescription = currentTrack.title,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier

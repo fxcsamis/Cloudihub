@@ -24,6 +24,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,13 +55,14 @@ fun DownloadsScreen(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val downloads by viewModel.downloads.collectAsState()
+    val activeTab by viewModel.activeTab.collectAsStateWithLifecycle()
     
     BackHandler {
         if (viewModel.showFullScreenDownloads) {
             viewModel.showFullScreenDownloads = false
         } else if (viewModel.activeProfilePage == "downloads") {
             viewModel.activeProfilePage = "main"
-        } else if (viewModel.activeTab != NavigationTab.Home) {
+        } else if (activeTab != NavigationTab.Home) {
             viewModel.selectTab(NavigationTab.Home)
         }
     }
@@ -124,7 +126,7 @@ fun DownloadsScreen(
                                     viewModel.showFullScreenDownloads = false
                                 } else if (viewModel.activeProfilePage == "downloads") {
                                     viewModel.activeProfilePage = "main"
-                                } else if (viewModel.activeTab != NavigationTab.Home) {
+                                } else if (activeTab != NavigationTab.Home) {
                                     viewModel.selectTab(NavigationTab.Home)
                                 }
                             },
@@ -438,7 +440,7 @@ private fun FoldersSectionPage(viewModel: CloudihubViewModel) {
             .padding(horizontal = 12.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        items(folderList) { folder ->
+        items(folderList, key = { it.hashCode() }) { folder ->
             Card(
                 modifier = Modifier
                     .fillMaxWidth()

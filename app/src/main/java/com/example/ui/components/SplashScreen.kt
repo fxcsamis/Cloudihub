@@ -40,6 +40,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.cos
@@ -247,8 +248,8 @@ fun CloudeHubSplashScreen(
                 }
 
                 // --- OFFICIAL CLOUDEHUB LOGO (CLEAN WITHOUT CIRCLES OR HALO RINGS) ---
-                Image(
-                    painter = rememberAsyncImagePainter(com.example.R.drawable.cloudihub_logo_1784004021392),
+                AsyncImage(
+                    model = com.example.R.drawable.cloudihub_logo_1784004021392,
                     contentDescription = "Official CloudeHub Logo",
                     contentScale = ContentScale.Fit,
                     modifier = Modifier

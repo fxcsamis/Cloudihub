@@ -158,7 +158,7 @@ fun TabManagerDialog(
                         modifier = Modifier.weight(1f),
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        items(viewModel.browserTabs) { tab ->
+                        items(viewModel.browserTabs, key = { it.hashCode() }) { tab ->
                             val isActive = tab.id == viewModel.activeTabId
                             Card(
                                 modifier = Modifier

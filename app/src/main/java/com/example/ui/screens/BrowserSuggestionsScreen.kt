@@ -342,7 +342,7 @@ fun BrowserSearchSuggestionsPanel(
                 verticalArrangement = Arrangement.spacedBy(6.dp),
                 contentPadding = PaddingValues(bottom = 24.dp)
             ) {
-                items(filteredSuggestions) { suggestion ->
+                items(filteredSuggestions, key = { it.hashCode() }) { suggestion ->
                     Surface(
                         shape = RoundedCornerShape(14.dp),
                         color = cardBgColor,

@@ -54,6 +54,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import com.airbnb.lottie.compose.*
 import com.example.ui.components.LOTTIE_OVERLAY_1_URL
 import androidx.compose.foundation.BorderStroke
@@ -558,8 +559,8 @@ fun ReferScreen(viewModel: CloudihubViewModel) {
                                                 .padding(vertical = 6.dp),
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
-                                            Image(
-                                                painter = rememberAsyncImagePainter(friend.second),
+                                            AsyncImage(
+                                                model = friend.second,
                                                 contentDescription = friend.first,
                                                 contentScale = ContentScale.Crop,
                                                 modifier = Modifier

@@ -31,6 +31,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import com.example.ui.CloudihubViewModel
 
 @Composable
@@ -43,10 +44,11 @@ fun ProfileAvatarWithBadge(
     onClick: (() -> Unit)? = null
 ) {
     val isGoogleSignedIn by viewModel.isGoogleSignedIn.collectAsStateWithLifecycle()
+    val signedInUserPhoto by viewModel.signedInUserPhoto.collectAsStateWithLifecycle()
     val avatarUrl = if (viewModel.userProfileAvatar.isNotEmpty()) {
         viewModel.userProfileAvatar
-    } else if (isGoogleSignedIn && viewModel.signedInUserPhoto.isNotEmpty()) {
-        viewModel.signedInUserPhoto
+    } else if (isGoogleSignedIn && signedInUserPhoto.isNotEmpty()) {
+        signedInUserPhoto
     } else {
         "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300"
     }
@@ -91,8 +93,8 @@ fun ProfileAvatarWithBadge(
             }
         }
 
-        Image(
-            painter = rememberAsyncImagePainter(avatarUrl),
+        AsyncImage(
+            model = avatarUrl,
             contentDescription = "Profile Logo",
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -113,8 +115,8 @@ fun ProfileAvatarWithBadge(
                     .padding(1.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Image(
-                    painter = rememberAsyncImagePainter(activeBadge.imageUrl),
+                AsyncImage(
+                    model = activeBadge.imageUrl,
                     contentDescription = activeBadge.levelName,
                     contentScale = ContentScale.Fit,
                     modifier = Modifier.fillMaxSize()

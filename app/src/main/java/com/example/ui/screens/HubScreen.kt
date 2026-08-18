@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -505,9 +506,12 @@ fun HubPopupDialog(
     var selectedFramerate by remember { mutableStateOf("60 fps") }
 
     // Auto-transition to Step 2 when direct CDN stream extraction completes
-    LaunchedEffect(viewModel.isExtracting) {
-        if (!viewModel.isExtracting && extractionStep == 1) {
-            if (viewModel.extractedVideoForHub != null) {
+    val isExtracting by viewModel.isExtracting.collectAsStateWithLifecycle()
+    val extractedVideoForHub by viewModel.extractedVideoForHub.collectAsStateWithLifecycle()
+    val activeStreamingUrl by viewModel.activeStreamingUrl.collectAsStateWithLifecycle()
+    LaunchedEffect(isExtracting) {
+        if (!isExtracting && extractionStep == 1) {
+            if (extractedVideoForHub != null) {
                 extractionStep = 2
             } else {
                 extractionStep = 0
@@ -1003,7 +1007,7 @@ fun HubPopupDialog(
 
                                 2 -> {
                                     // --- STEP 2: VIDEO DOWNLOAD PREVIEW & LINE EXPANDABLE OPTIONS ---
-                                    val extractedVideo = viewModel.extractedVideoForHub
+                                    val extractedVideo = extractedVideoForHub
                                     val videoTitle = extractedVideo?.title ?: "Extracted Video Content"
                                     val videoDuration = extractedVideo?.duration ?: "01:25"
                                     val videoSize = extractedVideo?.sizeMb ?: 18.5
@@ -1161,7 +1165,7 @@ fun HubPopupDialog(
                                                     
                                                     val finalVideo = extractedVideo?.copy(
                                                         title = "${extractedVideo.title} [${selectedResolution}_${selectedFramerate}_$selectedFormat]",
-                                                        fileUrl = viewModel.activeStreamingUrl
+                                                        fileUrl = activeStreamingUrl
                                                     ) ?: mockVideo
                                                     viewModel.triggerVideoDownload(finalVideo)
                                                     dismissWithAnimation()

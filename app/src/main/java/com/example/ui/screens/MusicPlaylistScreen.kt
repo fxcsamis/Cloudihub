@@ -74,6 +74,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import com.example.ui.CloudihubViewModel
 import com.example.ui.MusicTrack
 
@@ -122,16 +123,16 @@ fun PlaylistDetailOverlay(
                     // 2x2 Image Collage Banner (Edge-to-Edge)
                     Column(modifier = Modifier.fillMaxSize()) {
                         Row(modifier = Modifier.weight(1f)) {
-                            Image(
-                                painter = rememberAsyncImagePainter(playlist.images.getOrElse(0) { "" }),
+                            AsyncImage(
+                                model = playlist.images.getOrElse(0) { "" },
                                 contentDescription = null,
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
                                     .weight(1f)
                                     .fillMaxHeight()
                             )
-                            Image(
-                                painter = rememberAsyncImagePainter(playlist.images.getOrElse(1) { "" }),
+                            AsyncImage(
+                                model = playlist.images.getOrElse(1) { "" },
                                 contentDescription = null,
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
@@ -140,16 +141,16 @@ fun PlaylistDetailOverlay(
                             )
                         }
                         Row(modifier = Modifier.weight(1f)) {
-                            Image(
-                                painter = rememberAsyncImagePainter(playlist.images.getOrElse(2) { "" }),
+                            AsyncImage(
+                                model = playlist.images.getOrElse(2) { "" },
                                 contentDescription = null,
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
                                     .weight(1f)
                                     .fillMaxHeight()
                             )
-                            Image(
-                                painter = rememberAsyncImagePainter(playlist.images.getOrElse(3) { "" }),
+                            AsyncImage(
+                                model = playlist.images.getOrElse(3) { "" },
                                 contentDescription = null,
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
@@ -327,7 +328,7 @@ fun PlaylistDetailOverlay(
             }
 
             // 2. TRACKS LIST (With Animated Equalizer Waves & Selection Feedback)
-            items(playlist.tracks) { track ->
+            items(playlist.tracks, key = { it.hashCode() }) { track ->
                 val interactionSource = remember { MutableInteractionSource() }
                 val isPressed by interactionSource.collectIsPressedAsState()
                 val scale by animateFloatAsState(if (isPressed) 0.97f else 1.0f, label = "trackScale")
@@ -343,8 +344,8 @@ fun PlaylistDetailOverlay(
                         .padding(horizontal = 20.dp, vertical = 10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Image(
-                        painter = rememberAsyncImagePainter(track.albumArt),
+                    AsyncImage(
+                        model = track.albumArt,
                         contentDescription = track.title,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier

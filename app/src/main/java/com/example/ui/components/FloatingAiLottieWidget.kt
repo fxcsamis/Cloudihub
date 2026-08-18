@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import com.airbnb.lottie.compose.*
 import com.airbnb.lottie.LottieComposition
 import com.example.ui.CloudVideo
@@ -700,8 +701,8 @@ fun AiAssistantChatDialog(
                                                         .height(110.dp)
                                                         .clip(RoundedCornerShape(10.dp))
                                                 ) {
-                                                    Image(
-                                                        painter = rememberAsyncImagePainter(vid.imageUrl),
+                                                    AsyncImage(
+                                                        model = vid.imageUrl,
                                                         contentDescription = vid.title,
                                                         contentScale = ContentScale.Crop,
                                                         modifier = Modifier.fillMaxSize()

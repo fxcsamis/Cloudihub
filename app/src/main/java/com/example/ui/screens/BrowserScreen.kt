@@ -1795,7 +1795,7 @@ fun BrowserScreen(
                                     verticalArrangement = Arrangement.spacedBy(10.dp),
                                     modifier = Modifier.padding(bottom = 24.dp)
                                 ) {
-                                    items(extractedResolutions) { option ->
+                                    items(extractedResolutions, key = { it.hashCode() }) { option ->
                                         Surface(
                                             onClick = {
                                                 showResolutionSheet = false

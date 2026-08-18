@@ -782,8 +782,8 @@ fun MusicScreen(
                                 isPlaying = true
                             }
                     ) {
-                        Image(
-                            painter = rememberAsyncImagePainter("https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800"),
+                        AsyncImage(
+                            model = "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800",
                             contentDescription = "Forgotten Favorite",
                             contentScale = ContentScale.Crop,
                             modifier = Modifier.fillMaxSize()
@@ -1043,8 +1043,8 @@ fun MusicScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.weight(1f)
                     ) {
-                        Image(
-                            painter = rememberAsyncImagePainter(currentTrack.albumArt),
+                        AsyncImage(
+                            model = currentTrack.albumArt,
                             contentDescription = currentTrack.title,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier

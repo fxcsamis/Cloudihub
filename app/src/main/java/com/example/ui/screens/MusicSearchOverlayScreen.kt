@@ -77,6 +77,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import com.example.ui.CloudihubViewModel
 import com.example.ui.MusicTrack
 
@@ -276,7 +277,7 @@ fun MusicSearchScreenOverlay(
                                 LazyRow(
                                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
-                                    items(viewModel.recentSearches) { historyQuery ->
+                                    items(viewModel.recentSearches, key = { it.hashCode() }) { historyQuery ->
                                         Surface(
                                             shape = CircleShape,
                                             color = Color.White,
@@ -332,7 +333,7 @@ fun MusicSearchScreenOverlay(
                             LazyRow(
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                items(trending) { tag ->
+                                items(trending, key = { it.hashCode() }) { tag ->
                                     Surface(
                                         shape = CircleShape,
                                         color = Color(0xFFF0F9FF),
@@ -401,7 +402,7 @@ fun MusicSearchScreenOverlay(
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                             )
                         }
-                        items(filteredTracks) { track ->
+                        items(filteredTracks, key = { it.hashCode() }) { track ->
                             Surface(
                                 color = Color.Transparent,
                                 modifier = Modifier
@@ -416,8 +417,8 @@ fun MusicSearchScreenOverlay(
                                     verticalAlignment = Alignment.CenterVertically,
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
-                                    Image(
-                                        painter = rememberAsyncImagePainter(track.albumArt),
+                                    AsyncImage(
+                                        model = track.albumArt,
                                         contentDescription = track.title,
                                         contentScale = ContentScale.Crop,
                                         modifier = Modifier

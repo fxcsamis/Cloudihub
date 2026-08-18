@@ -314,7 +314,7 @@ fun HistoryBottomSheet(
                         .heightIn(max = 360.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    items(viewModel.historyItems) { item ->
+                    items(viewModel.historyItems, key = { it.hashCode() }) { item ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()

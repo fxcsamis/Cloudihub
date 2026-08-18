@@ -154,28 +154,28 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
         private set
     private var tabLoadJob: Job? = null
     private val visitedTabs = mutableSetOf<NavigationTab>(NavigationTab.Home)
-    var currentDetectedRegion by mutableStateOf("US")
-        private set
+    private val _currentDetectedRegion = MutableStateFlow("US")
+    val currentDetectedRegion: StateFlow<String> = _currentDetectedRegion.asStateFlow()
     private val _isGoogleSignedIn = MutableStateFlow(false)
     val isGoogleSignedIn: StateFlow<Boolean> = _isGoogleSignedIn.asStateFlow()
-    var signedInUserEmail by mutableStateOf("")
-        private set
-    var signedInUserName by mutableStateOf("")
-        private set
-    var signedInUserPhoto by mutableStateOf("")
-        private set
-    var googleOAuthAccessToken by mutableStateOf("")
-        private set
+    private val _signedInUserEmail = MutableStateFlow("")
+    val signedInUserEmail: StateFlow<String> = _signedInUserEmail.asStateFlow()
+    private val _signedInUserName = MutableStateFlow("")
+    val signedInUserName: StateFlow<String> = _signedInUserName.asStateFlow()
+    private val _signedInUserPhoto = MutableStateFlow("")
+    val signedInUserPhoto: StateFlow<String> = _signedInUserPhoto.asStateFlow()
+    private val _googleOAuthAccessToken = MutableStateFlow("")
+    val googleOAuthAccessToken: StateFlow<String> = _googleOAuthAccessToken.asStateFlow()
 
     // --- MODULE 3 & 4: Dual-Mode Video Extractor & Player Related Feed ---
-    var activeStreamingUrl by mutableStateOf("")
-        private set
-    var extractorModeMsg by mutableStateOf("")
-        private set
-    var isExtracting by mutableStateOf(false)
-        private set
-    var extractedVideoForHub by mutableStateOf<CloudVideo?>(null)
-        private set
+    private val _activeStreamingUrl = MutableStateFlow("")
+    val activeStreamingUrl: StateFlow<String> = _activeStreamingUrl.asStateFlow()
+    private val _extractorModeMsg = MutableStateFlow("")
+    val extractorModeMsg: StateFlow<String> = _extractorModeMsg.asStateFlow()
+    private val _isExtracting = MutableStateFlow(false)
+    val isExtracting: StateFlow<Boolean> = _isExtracting.asStateFlow()
+    private val _extractedVideoForHub = MutableStateFlow<CloudVideo?>(null)
+    val extractedVideoForHub: StateFlow<CloudVideo?> = _extractedVideoForHub.asStateFlow()
     private val _relatedVideos = MutableStateFlow<List<CloudVideo>>(emptyList())
     val relatedVideos: StateFlow<List<CloudVideo>> = _relatedVideos.asStateFlow()
 
@@ -211,10 +211,10 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun signInWithGoogle(name: String, email: String, photo: String, token: String) {
         _isGoogleSignedIn.value = true
-        signedInUserName = name
-        signedInUserEmail = email
-        signedInUserPhoto = photo
-        googleOAuthAccessToken = token
+        _signedInUserName.value = name
+        _signedInUserEmail.value = email
+        _signedInUserPhoto.value = photo
+        _googleOAuthAccessToken.value = token
 
         val sp = getApplication<Application>().getSharedPreferences("user_prefs", android.content.Context.MODE_PRIVATE)
         sp.edit()
@@ -230,10 +230,10 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun signOutGoogle() {
         _isGoogleSignedIn.value = false
-        signedInUserName = ""
-        signedInUserEmail = ""
-        signedInUserPhoto = ""
-        googleOAuthAccessToken = ""
+        _signedInUserName.value = ""
+        _signedInUserEmail.value = ""
+        _signedInUserPhoto.value = ""
+        _googleOAuthAccessToken.value = ""
 
         val sp = getApplication<Application>().getSharedPreferences("user_prefs", android.content.Context.MODE_PRIVATE)
         sp.edit().clear().apply()
@@ -262,7 +262,7 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
             // the exact same local dataset it can just load immediately.
             // Skipping straight to the local set removes that entire delay.
             _videos.value = getLocalFallbackVideos()
-            extractorModeMsg = "Showing local demo video set"
+            _extractorModeMsg.value = "Showing local demo video set"
             _isLoadingVideos.value = false
 
             /* --- Previous Piped API network-fetch path, kept here (unused)
@@ -373,7 +373,7 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
                     _videos.value = result
                     successful = true
                     addLog("Success! Found ${result.size} search results from Server #${index + 1}")
-                    extractorModeMsg = "Loaded search results from API Server #${index + 1} ($baseUrl)"
+                    _extractorModeMsg.value = "Loaded search results from API Server #${index + 1} ($baseUrl)"
                     break
                 }
             } catch (e: Exception) {
@@ -388,34 +388,34 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
                 it.title.contains(query, ignoreCase = true) || it.creator.contains(query, ignoreCase = true)
             }
             _videos.value = filteredFallback
-            extractorModeMsg = "Search offline. Local match count: ${filteredFallback.size}"
+            _extractorModeMsg.value = "Search offline. Local match count: ${filteredFallback.size}"
         }
         _isLoadingVideos.value = false
     }
 
     fun extractStreamAndPreparePlayer(video: CloudVideo) {
         viewModelScope.launch {
-            isExtracting = true
+            _isExtracting.value = true
             addLog("Starting stream extraction for video ID: ${video.id}")
             
             // Fast bypass for non-YouTube direct MP4 fallback video streams
             if (!video.fileUrl.contains("youtube.com")) {
                 addLog("Local fallback direct stream detected. Fast bypass extraction.")
-                activeStreamingUrl = video.fileUrl
-                isExtracting = false
-                extractorModeMsg = "Direct stream ready"
+                _activeStreamingUrl.value = video.fileUrl
+                _isExtracting.value = false
+                _extractorModeMsg.value = "Direct stream ready"
                 _relatedVideos.value = emptyList()
                 return@launch
             }
 
-            extractorModeMsg = "Contacting extraction nodes..."
+            _extractorModeMsg.value = "Contacting extraction nodes..."
             var parsedUrl = ""
             var apiSuccess = false
             
             for ((index, baseUrl) in PIPED_APIS.withIndex()) {
                 try {
                     addLog("Contacting Extraction Node #${index + 1}: $baseUrl")
-                    extractorModeMsg = "Querying Extraction Node #${index + 1} ($baseUrl)..."
+                    _extractorModeMsg.value = "Querying Extraction Node #${index + 1} ($baseUrl)..."
                     delay(500)
                     
                     val streamUrl = withContext(Dispatchers.IO) {
@@ -435,7 +435,7 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
                         parsedUrl = streamUrl
                         apiSuccess = true
                         addLog("Success! Extracted real stream URL from Node #${index + 1}")
-                        extractorModeMsg = "Stream parsed successfully via cloud extraction node!"
+                        _extractorModeMsg.value = "Stream parsed successfully via cloud extraction node!"
                         break
                     } else {
                         addLog("Node #${index + 1} returned empty stream URL.")
@@ -448,11 +448,11 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
             if (!apiSuccess) {
                 parsedUrl = "https://vjs.zencdn.net/v/oceans.mp4"
                 addLog("Extraction Error: All extraction nodes failed. Using backup cloud timelapse stream node.")
-                extractorModeMsg = "Cloud node failover. Real-time CDN streaming active."
+                _extractorModeMsg.value = "Cloud node failover. Real-time CDN streaming active."
             }
             
-            activeStreamingUrl = parsedUrl
-            isExtracting = false
+            _activeStreamingUrl.value = parsedUrl
+            _isExtracting.value = false
             
             prepareRelatedVideosFromApis(video)
         }
@@ -460,10 +460,10 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun extractFromHubUrl(url: String, platformName: String) {
         viewModelScope.launch {
-            isExtracting = true
-            extractedVideoForHub = null
+            _isExtracting.value = true
+            _extractedVideoForHub.value = null
             addLog("Step 1: User input URL received in Hub: $url for platform: $platformName")
-            extractorModeMsg = "Step 2: Dispatching light-weight metadata API call to serverless node..."
+            _extractorModeMsg.value = "Step 2: Dispatching light-weight metadata API call to serverless node..."
             delay(1200)
 
             var videoId = ""
@@ -475,7 +475,7 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
                 videoId = "extracted_${System.currentTimeMillis()}"
             }
 
-            extractorModeMsg = "Step 3: Extracting direct CDN source stream links via serverless yt-dlp layer..."
+            _extractorModeMsg.value = "Step 3: Extracting direct CDN source stream links via serverless yt-dlp layer..."
             delay(1200)
 
             var resolvedUrl = "https://vjs.zencdn.net/v/oceans.mp4"
@@ -545,10 +545,10 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
                 sizeMb = sizeMb
             )
 
-            extractedVideoForHub = resultVideo
-            activeStreamingUrl = resolvedUrl
-            isExtracting = false
-            extractorModeMsg = "Step 4: Stream address resolved successfully! Direct CDN streaming active."
+            _extractedVideoForHub.value = resultVideo
+            _activeStreamingUrl.value = resolvedUrl
+            _isExtracting.value = false
+            _extractorModeMsg.value = "Step 4: Stream address resolved successfully! Direct CDN streaming active."
             addLog("Success: Ready to stream/download directly: $videoTitle")
         }
     }
@@ -584,8 +584,8 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     // Active Navigation Tab
-    var activeTab by mutableStateOf<NavigationTab>(NavigationTab.Home)
-        private set
+    private val _activeTab = MutableStateFlow<NavigationTab>(NavigationTab.Home)
+    val activeTab: StateFlow<NavigationTab> = _activeTab.asStateFlow()
 
     // Auto-hide Navigation Bar during scroll
     var isNavBarVisible by mutableStateOf(true)
@@ -607,8 +607,8 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
     var showCloudHubInProfile by mutableStateOf(false)
 
     // Video streaming state & PIP expansion mode
-    var playingVideo by mutableStateOf<CloudVideo?>(null)
-        private set
+    private val _playingVideo = MutableStateFlow<CloudVideo?>(null)
+    val playingVideo: StateFlow<CloudVideo?> = _playingVideo.asStateFlow()
 
     var isVideoPlayerExpanded by mutableStateOf(true)
 
@@ -628,15 +628,15 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     fun playVideo(video: CloudVideo) {
-        playingVideo = video
+        _playingVideo.value = video
         isVideoPlayerExpanded = true // Reset to expanded full-screen when starting new video
         addHistoryItem("Video", video.title, video.creator)
         extractStreamAndPreparePlayer(video)
     }
 
     fun stopVideo() {
-        playingVideo = null
-        activeStreamingUrl = ""
+        _playingVideo.value = null
+        _activeStreamingUrl.value = ""
     }
 
     fun getShortsVideos(): List<CloudVideo> {
@@ -870,15 +870,15 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
         // Load persisted Google Sign-In state if any
         val sp = getApplication<Application>().getSharedPreferences("user_prefs", android.content.Context.MODE_PRIVATE)
         _isGoogleSignedIn.value = sp.getBoolean("is_signed_in", false)
-        signedInUserName = sp.getString("user_name", "") ?: ""
-        signedInUserEmail = sp.getString("user_email", "") ?: ""
-        signedInUserPhoto = sp.getString("user_photo", "") ?: ""
-        googleOAuthAccessToken = sp.getString("oauth_token", "") ?: ""
+        _signedInUserName.value = sp.getString("user_name", "") ?: ""
+        _signedInUserEmail.value = sp.getString("user_email", "") ?: ""
+        _signedInUserPhoto.value = sp.getString("user_photo", "") ?: ""
+        _googleOAuthAccessToken.value = sp.getString("oauth_token", "") ?: ""
 
-        val defaultName = if (signedInUserName.isNotEmpty()) signedInUserName else "Alex Skyward"
-        val defaultUsername = if (signedInUserName.isNotEmpty()) "@${signedInUserName.lowercase().replace(" ", "_")}" else "@alexskyward"
-        val defaultEmail = if (signedInUserEmail.isNotEmpty()) signedInUserEmail else "alex.skyward@cloudihub.io"
-        val defaultPhoto = if (signedInUserPhoto.isNotEmpty()) signedInUserPhoto else "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300"
+        val defaultName = if (_signedInUserName.value.isNotEmpty()) _signedInUserName.value else "Alex Skyward"
+        val defaultUsername = if (_signedInUserName.value.isNotEmpty()) "@${_signedInUserName.value.lowercase().replace(" ", "_")}" else "@alexskyward"
+        val defaultEmail = if (_signedInUserEmail.value.isNotEmpty()) _signedInUserEmail.value else "alex.skyward@cloudihub.io"
+        val defaultPhoto = if (_signedInUserPhoto.value.isNotEmpty()) _signedInUserPhoto.value else "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300"
 
         userProfileFullName = sp.getString("profile_full_name", defaultName) ?: defaultName
         userProfileUsername = sp.getString("profile_username", defaultUsername) ?: defaultUsername
@@ -904,8 +904,8 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     fun selectTab(tab: NavigationTab) {
-        val isSameTab = tab == activeTab
-        activeTab = tab
+        val isSameTab = tab == _activeTab.value
+        _activeTab.value = tab
         isNavBarVisible = true
 
         // Don't re-run the loading gate if the user tapped the tab they're
@@ -997,7 +997,7 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun openUrl(url: String) {
         browserUrl = url
-        activeTab = NavigationTab.Browser
+        _activeTab.value = NavigationTab.Browser
         if (!isIncognitoMode) {
             addHistoryItem("Browser", "Visited Page", url)
         }
@@ -1340,7 +1340,7 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun executeDirectVoiceSearch(query: String) {
         updateSearchQuery(query)
-        if (activeTab == NavigationTab.Browser) {
+        if (_activeTab.value == NavigationTab.Browser) {
             val target = if (query.startsWith("http://") || query.startsWith("https://")) {
                 query
             } else {
@@ -1388,9 +1388,9 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
 
         // Also update signedInUserName/Email if applicable
         if (_isGoogleSignedIn.value) {
-            signedInUserName = userProfileFullName
-            signedInUserEmail = userProfileEmail
-            signedInUserPhoto = userProfileAvatar
+            _signedInUserName.value = userProfileFullName
+            _signedInUserEmail.value = userProfileEmail
+            _signedInUserPhoto.value = userProfileAvatar
         }
 
         val sp = getApplication<Application>().getSharedPreferences("user_prefs", android.content.Context.MODE_PRIVATE)

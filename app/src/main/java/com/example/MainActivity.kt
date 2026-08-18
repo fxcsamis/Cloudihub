@@ -207,6 +207,9 @@ class MainActivity : FragmentActivity() {
             // here so this read pauses along with the rest of the screen instead of
             // always being active.
             val isLoadingVideosState by viewModel.isLoadingVideos.collectAsStateWithLifecycle()
+            val activeStreamingUrlState by viewModel.activeStreamingUrl.collectAsStateWithLifecycle()
+            val activeTabState by viewModel.activeTab.collectAsStateWithLifecycle()
+            val playingVideoState by viewModel.playingVideo.collectAsStateWithLifecycle()
             val showSplashScreen = !splashAnimationDone || (isLoadingVideosState && !splashSafetyTimeoutHit)
             var showExitConfirmDialog by remember { mutableStateOf(false) }
 
@@ -235,22 +238,22 @@ class MainActivity : FragmentActivity() {
                     viewModel.closeShortsScreen()
                 } else if (viewModel.isFullMusicPlayerOpen) {
                     viewModel.isFullMusicPlayerOpen = false
-                } else if (viewModel.playingVideo != null && viewModel.isVideoPlayerExpanded) {
+                } else if (playingVideoState != null && viewModel.isVideoPlayerExpanded) {
                     viewModel.isVideoPlayerExpanded = false
                 } else if (viewModel.isPlaylistOverlayOpen) {
                     viewModel.isPlaylistOverlayOpen = false
                 } else if (viewModel.activeProfilePage != "main") {
                     viewModel.activeProfilePage = "main"
-                } else if (viewModel.activeTab == NavigationTab.Browser && viewModel.browserUrl.isNotEmpty()) {
+                } else if (activeTabState == NavigationTab.Browser && viewModel.browserUrl.isNotEmpty()) {
                     viewModel.openUrl("")
-                } else if (viewModel.activeTab != NavigationTab.Home) {
+                } else if (activeTabState != NavigationTab.Home) {
                     viewModel.selectTab(NavigationTab.Home)
                 } else {
                     showExitConfirmDialog = true
                 }
             }
 
-            val isVaultActive = viewModel.activeProfilePage == "private_vault" && viewModel.activeTab == NavigationTab.Profile
+            val isVaultActive = viewModel.activeProfilePage == "private_vault" && activeTabState == NavigationTab.Profile
             LaunchedEffect(isVaultActive) {
                 val insetsController = androidx.core.view.WindowCompat.getInsetsController(window, window.decorView)
                 if (isVaultActive) {
@@ -312,7 +315,7 @@ class MainActivity : FragmentActivity() {
                                 // Hub, so switching to Hub (or any other tab) now
                                 // animates in instead of hard-cutting.
                                 AnimatedContent(
-                                    targetState = viewModel.activeTab,
+                                    targetState = activeTabState,
                                     transitionSpec = {
                                         (fadeIn(animationSpec = tween(220, delayMillis = 60)) +
                                             slideInVertically(
@@ -351,7 +354,7 @@ class MainActivity : FragmentActivity() {
                                 viewModel.showEditProfileScreen ||
                                 viewModel.showAiFullChatScreen || 
                                 isVaultActive || 
-                                (viewModel.activeTab == NavigationTab.Browser && (viewModel.isBrowserFullscreen || viewModel.browserUrl.isNotEmpty())) ||
+                                (activeTabState == NavigationTab.Browser && (viewModel.isBrowserFullscreen || viewModel.browserUrl.isNotEmpty())) ||
                                 viewModel.isPlaylistOverlayOpen ||
                                 viewModel.isFullMusicPlayerOpen ||
                                 !viewModel.isNavBarVisible
@@ -363,7 +366,7 @@ class MainActivity : FragmentActivity() {
                             modifier = Modifier.align(Alignment.BottomCenter)
                         ) {
                             GlassmorphicNavBar(
-                                activeTab = viewModel.activeTab,
+                                activeTab = activeTabState,
                                 onTabSelected = { viewModel.selectTab(it) }
                             )
                         }
@@ -380,8 +383,8 @@ class MainActivity : FragmentActivity() {
                         DownloadsHub(viewModel = viewModel)
 
                         // 6. Shared Element Spring Animated Video Streaming Player
-                        val isHiddenScreen = (viewModel.activeTab == NavigationTab.Profile || viewModel.activeTab == NavigationTab.Browser)
-                        val isPlayerVisible = viewModel.playingVideo != null && !viewModel.isFullMusicPlayerOpen && (viewModel.isVideoPlayerExpanded || !isHiddenScreen)
+                        val isHiddenScreen = (activeTabState == NavigationTab.Profile || activeTabState == NavigationTab.Browser)
+                        val isPlayerVisible = playingVideoState != null && !viewModel.isFullMusicPlayerOpen && (viewModel.isVideoPlayerExpanded || !isHiddenScreen)
 
                         AnimatedVisibility(
                             visible = isPlayerVisible,
@@ -440,11 +443,11 @@ class MainActivity : FragmentActivity() {
                         )
 
                         // 8. Global Floating AI Lottie Assistant Overlay (Available across all screens except Private Vault, Signup, Edit Profile, Full AI Chat, Active Website View & Full Music Player)
-                        val isBrowsingActiveSite = (viewModel.activeTab == NavigationTab.Browser && viewModel.browserUrl.isNotEmpty())
+                        val isBrowsingActiveSite = (activeTabState == NavigationTab.Browser && viewModel.browserUrl.isNotEmpty())
                         if (!isVaultActive && !viewModel.showSignupScreen && !viewModel.showEditProfileScreen && !viewModel.showAiFullChatScreen && !isBrowsingActiveSite && !viewModel.isFullMusicPlayerOpen) {
                             FloatingAiLottieWidget(
                                 viewModel = viewModel,
-                                isMediaPlaying = (viewModel.activeStreamingUrl.isNotEmpty() || viewModel.isPlaying),
+                                isMediaPlaying = (activeStreamingUrlState.isNotEmpty() || viewModel.isPlaying),
                                 onSearchRequested = { query ->
                                     viewModel.updateSearchQuery(query)
                                     viewModel.selectTab(NavigationTab.Home)

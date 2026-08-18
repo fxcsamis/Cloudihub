@@ -74,6 +74,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import com.example.ui.CloudihubViewModel
 import com.example.ui.MusicTrack
 
@@ -269,8 +270,8 @@ fun RecentMusicHistoryScreenOverlay(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Box(contentAlignment = Alignment.Center) {
-                                        Image(
-                                            painter = rememberAsyncImagePainter(track.albumArt),
+                                        AsyncImage(
+                                            model = track.albumArt,
                                             contentDescription = track.title,
                                             contentScale = ContentScale.Crop,
                                             modifier = Modifier

@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import com.example.ui.CloudihubViewModel
 import com.example.ui.components.CloudSkyBackground
 import kotlinx.coroutines.delay
@@ -270,8 +271,8 @@ fun EditProfileScreen(
                             }
 
                             // Main Avatar Image
-                            Image(
-                                painter = rememberAsyncImagePainter(avatarUrl),
+                            AsyncImage(
+                                model = avatarUrl,
                                 contentDescription = "Profile Avatar",
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
@@ -315,8 +316,8 @@ fun EditProfileScreen(
                                         .padding(2.dp),
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    Image(
-                                        painter = rememberAsyncImagePainter(activeBadge.imageUrl),
+                                    AsyncImage(
+                                        model = activeBadge.imageUrl,
                                         contentDescription = activeBadge.levelName,
                                         contentScale = ContentScale.Fit,
                                         modifier = Modifier.fillMaxSize()
@@ -563,8 +564,8 @@ fun EditProfileScreen(
                                     .padding(4.dp),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Image(
-                                    painter = rememberAsyncImagePainter(activeBadge.imageUrl),
+                                AsyncImage(
+                                    model = activeBadge.imageUrl,
                                     contentDescription = activeBadge.levelName,
                                     contentScale = ContentScale.Fit,
                                     modifier = Modifier.fillMaxSize()
@@ -917,7 +918,7 @@ fun EditProfileScreen(
                             horizontalArrangement = Arrangement.spacedBy(10.dp),
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            items(PRESET_AVATARS) { preset ->
+                            items(PRESET_AVATARS, key = { it.hashCode() }) { preset ->
                                 val isSelected = avatarUrl == preset
                                 Box(
                                     modifier = Modifier
@@ -933,8 +934,8 @@ fun EditProfileScreen(
                                         }
                                         .padding(2.dp)
                                 ) {
-                                    Image(
-                                        painter = rememberAsyncImagePainter(preset),
+                                    AsyncImage(
+                                        model = preset,
                                         contentDescription = "Avatar",
                                         contentScale = ContentScale.Crop,
                                         modifier = Modifier
