@@ -150,8 +150,8 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
     // visited in this app session - after that, its data is already cached in
     // this ViewModel (which survives tab switches), so returning to it should
     // show the cached result instantly with no loading flash at all.
-    var isTabContentLoading by mutableStateOf(false)
-        private set
+    private val _isTabContentLoading = MutableStateFlow(false)
+    val isTabContentLoading: StateFlow<Boolean> = _isTabContentLoading.asStateFlow()
     private var tabLoadJob: Job? = null
     private val visitedTabs = mutableSetOf<NavigationTab>(NavigationTab.Home)
     private val _currentDetectedRegion = MutableStateFlow("US")
@@ -700,8 +700,8 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     // Search and Filtering
-    var searchQuery by mutableStateOf("")
-        private set
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
     var recentSearches by mutableStateOf<List<String>>(emptyList())
         internal set
@@ -721,8 +721,8 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
     data class BrowserBookmark(val name: String, val url: String)
 
     // User bookmarks
-    var browserBookmarks by mutableStateOf<List<BrowserBookmark>>(emptyList())
-        private set
+    private val _browserBookmarks = MutableStateFlow<List<BrowserBookmark>>(emptyList())
+    val browserBookmarks: StateFlow<List<BrowserBookmark>> = _browserBookmarks.asStateFlow()
 
     fun loadBookmarks() {
         val sharedPref = getApplication<Application>().getSharedPreferences("browser_prefs", android.content.Context.MODE_PRIVATE)
@@ -756,7 +756,7 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
                 list.addAll(defaults)
             }
         }
-        browserBookmarks = list
+        _browserBookmarks.value = list
     }
 
     fun addBookmark(name: String, url: String) {
@@ -765,14 +765,14 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
         } else {
             url
         }
-        val newList = browserBookmarks + BrowserBookmark(name, cleanUrl)
-        browserBookmarks = newList
+        val newList = _browserBookmarks.value + BrowserBookmark(name, cleanUrl)
+        _browserBookmarks.value = newList
         saveBookmarks(newList)
     }
 
     fun removeBookmark(bookmark: BrowserBookmark) {
-        val newList = browserBookmarks.filter { it.url != bookmark.url }
-        browserBookmarks = newList
+        val newList = _browserBookmarks.value.filter { it.url != bookmark.url }
+        _browserBookmarks.value = newList
         saveBookmarks(newList)
     }
 
@@ -783,12 +783,12 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     // Voice search states
-    var isListening by mutableStateOf(false)
-        private set
-    var voiceMessage by mutableStateOf("")
-        private set
-    var showVoiceDialog by mutableStateOf(false)
-        private set
+    private val _isListening = MutableStateFlow(false)
+    val isListening: StateFlow<Boolean> = _isListening.asStateFlow()
+    private val _voiceMessage = MutableStateFlow("")
+    val voiceMessage: StateFlow<String> = _voiceMessage.asStateFlow()
+    private val _showVoiceDialog = MutableStateFlow(false)
+    val showVoiceDialog: StateFlow<Boolean> = _showVoiceDialog.asStateFlow()
 
     // Speech Recognizer instance
     private var speechRecognizer: SpeechRecognizer? = null
@@ -797,8 +797,8 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
     private val _videos = mutableStateOf<List<CloudVideo>>(emptyList())
     val videos: List<CloudVideo>
         get() = _videos.value.filter {
-            it.title.contains(searchQuery, ignoreCase = true) ||
-                    it.creator.contains(searchQuery, ignoreCase = true)
+            it.title.contains(_searchQuery.value, ignoreCase = true) ||
+                    it.creator.contains(_searchQuery.value, ignoreCase = true)
         }
 
     // Music database
@@ -921,14 +921,14 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
                     // fetched the feed earlier this session, show it instantly -
                     // no reload, no overlay, just the cached result.
                     if (_videos.value.isEmpty()) {
-                        isTabContentLoading = true
+                        _isTabContentLoading.value = true
                         if (!_isLoadingVideos.value) {
                             loadHybridFeed()
                         }
                         while (_isLoadingVideos.value) {
                             delay(40)
                         }
-                        isTabContentLoading = false
+                        _isTabContentLoading.value = false
                     }
                 }
                 else -> {
@@ -937,9 +937,9 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
                     // tab is opened in the session; every visit after that reuses
                     // the same cached state and shows instantly.
                     if (tab !in visitedTabs) {
-                        isTabContentLoading = true
+                        _isTabContentLoading.value = true
                         delay(150)
-                        isTabContentLoading = false
+                        _isTabContentLoading.value = false
                         visitedTabs.add(tab)
                     }
                 }
@@ -950,7 +950,7 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
     private var searchJob: Job? = null
 
     fun updateSearchQuery(query: String) {
-        searchQuery = query
+        _searchQuery.value = query
         addLog("Search query updated to: '$query'")
         
         searchJob?.cancel()
@@ -965,7 +965,7 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     fun triggerDoneSearchKeyboardAction(query: String) {
-        searchQuery = query
+        _searchQuery.value = query
         addSearchQueryToHistory(query)
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
@@ -1248,9 +1248,9 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
             putExtra(RecognizerIntent.EXTRA_PROMPT, "Search cloud resources...")
         }
 
-        showVoiceDialog = true
-        isListening = true
-        voiceMessage = "Listening to your sky voice..."
+        _showVoiceDialog.value = true
+        _isListening.value = true
+        _voiceMessage.value = "Listening to your sky voice..."
 
         viewModelScope.launch {
             // Because SpeechRecognizer runs best on main/UI thread, we also implement a simulated voice typing
@@ -1261,13 +1261,13 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
                 try {
                     speechRecognizer?.setRecognitionListener(object : RecognitionListener {
                         override fun onReadyForSpeech(params: Bundle?) {
-                            voiceMessage = "Cloudihub is listening..."
+                            _voiceMessage.value = "Cloudihub is listening..."
                         }
                         override fun onBeginningOfSpeech() {}
                         override fun onRmsChanged(rmsdB: Float) {}
                         override fun onBufferReceived(buffer: ByteArray?) {}
                         override fun onEndOfSpeech() {
-                            voiceMessage = "Analysing your cloud request..."
+                            _voiceMessage.value = "Analysing your cloud request..."
                         }
                         override fun onError(error: Int) {
                             // If any API error happens (e.g. permission or no internet), trigger smart simulation typing!
@@ -1278,11 +1278,11 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
                             val spokenText = matches?.firstOrNull() ?: ""
                             if (spokenText.isNotEmpty()) {
                                 executeDirectVoiceSearch(spokenText)
-                                voiceMessage = "Searching: \"$spokenText\""
+                                _voiceMessage.value = "Searching: \"$spokenText\""
                                 viewModelScope.launch {
                                     delay(800)
-                                    showVoiceDialog = false
-                                    isListening = false
+                                    _showVoiceDialog.value = false
+                                    _isListening.value = false
                                 }
                             } else {
                                 runSpeechSimulation()
@@ -1314,27 +1314,27 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
             val phrase = possiblePhrases.random()
             
             delay(1000)
-            voiceMessage = "Detecting: ."
+            _voiceMessage.value = "Detecting: ."
             delay(400)
-            voiceMessage = "Detecting: . ."
+            _voiceMessage.value = "Detecting: . ."
             delay(400)
-            voiceMessage = "Detecting: . . ."
+            _voiceMessage.value = "Detecting: . . ."
             delay(500)
             
             // Typewriter effect
             var typed = ""
             for (char in phrase) {
                 typed += char
-                voiceMessage = "Transcribing: \"$typed\""
+                _voiceMessage.value = "Transcribing: \"$typed\""
                 delay(60)
             }
             
             delay(800)
             executeDirectVoiceSearch(phrase)
-            voiceMessage = "Searching..."
+            _voiceMessage.value = "Searching..."
             delay(800)
-            showVoiceDialog = false
-            isListening = false
+            _showVoiceDialog.value = false
+            _isListening.value = false
         }
     }
 
@@ -1354,8 +1354,8 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
         try {
             speechRecognizer?.stopListening()
         } catch (e: Exception) {}
-        showVoiceDialog = false
-        isListening = false
+        _showVoiceDialog.value = false
+        _isListening.value = false
     }
 
     // --- Profile & Sub-section States ---

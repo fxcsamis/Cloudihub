@@ -50,6 +50,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -123,6 +124,7 @@ fun BrowserScreen(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    val browserBookmarks by viewModel.browserBookmarks.collectAsStateWithLifecycle()
     var webViewRef by remember { mutableStateOf<WebView?>(null) }
     var lastLoadedUrl by remember { mutableStateOf("") }
     var currentUrl by remember { mutableStateOf(viewModel.browserUrl) }
@@ -798,7 +800,7 @@ fun BrowserScreen(
                     }
                     
                     Text(
-                        text = "${viewModel.browserBookmarks.size} Sites",
+                        text = "${browserBookmarks.size} Sites",
                         fontSize = 11.sp,
                         color = if (viewModel.isIncognitoMode) Color(0xFF7E22CE) else Color(0xFF0284C7),
                         fontWeight = FontWeight.SemiBold,
@@ -813,7 +815,7 @@ fun BrowserScreen(
                 var showAddDialog by remember { mutableStateOf(false) }
 
                 // Simple grid of favorite bookmarked tiles (4 columns) including the '+' tile
-                val bookmarks = viewModel.browserBookmarks
+                val bookmarks = browserBookmarks
 
                 Column(
                     modifier = Modifier.fillMaxWidth(),

@@ -210,6 +210,8 @@ class MainActivity : FragmentActivity() {
             val activeStreamingUrlState by viewModel.activeStreamingUrl.collectAsStateWithLifecycle()
             val activeTabState by viewModel.activeTab.collectAsStateWithLifecycle()
             val playingVideoState by viewModel.playingVideo.collectAsStateWithLifecycle()
+            val showVoiceDialogState by viewModel.showVoiceDialog.collectAsStateWithLifecycle()
+            val isTabContentLoadingState by viewModel.isTabContentLoading.collectAsStateWithLifecycle()
             val showSplashScreen = !splashAnimationDone || (isLoadingVideosState && !splashSafetyTimeoutHit)
             var showExitConfirmDialog by remember { mutableStateOf(false) }
 
@@ -224,7 +226,7 @@ class MainActivity : FragmentActivity() {
                     viewModel.showPrivateVaultPasswordTypeDialog = false
                 } else if (viewModel.selectedVaultFolder != null) {
                     viewModel.selectedVaultFolder = null
-                } else if (viewModel.showVoiceDialog) {
+                } else if (showVoiceDialogState) {
                     viewModel.stopVoiceSearch()
                 } else if (viewModel.showFullScreenDownloads) {
                     viewModel.showFullScreenDownloads = false
@@ -340,7 +342,7 @@ class MainActivity : FragmentActivity() {
                             // just-selected tab's content/data is still preparing,
                             // so the destination screen is never revealed half-ready.
                             AnimatedVisibility(
-                                visible = viewModel.isTabContentLoading,
+                                visible = isTabContentLoadingState,
                                 enter = fadeIn(),
                                 exit = fadeOut(animationSpec = tween(280)),
                                 modifier = Modifier.zIndex(1500f)
@@ -372,7 +374,7 @@ class MainActivity : FragmentActivity() {
                         }
 
                         // 4. Edge-to-edge solid full screen Voice View
-                        if (viewModel.showVoiceDialog) {
+                        if (showVoiceDialogState) {
                             VoiceSearchDialog(
                                 viewModel = viewModel,
                                 modifier = Modifier.zIndex(600f)

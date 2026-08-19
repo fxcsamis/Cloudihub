@@ -213,7 +213,7 @@ fun HomeScreen(
     modifier: Modifier = Modifier
 ) {
     val videos = viewModel.videos
-    val searchQuery = viewModel.searchQuery
+    val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     // PILOT: isLoadingVideos is now a StateFlow - collected lifecycle-aware so
     // this pauses when the user isn't on the Home tab instead of always running.
     val isLoadingVideosState by viewModel.isLoadingVideos.collectAsStateWithLifecycle()

@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,8 +43,10 @@ fun VoiceSearchDialog(
     viewModel: CloudihubViewModel,
     modifier: Modifier = Modifier
 ) {
-    if (!viewModel.showVoiceDialog) return
+    val showVoiceDialog by viewModel.showVoiceDialog.collectAsStateWithLifecycle()
+    if (!showVoiceDialog) return
 
+    val voiceMessage by viewModel.voiceMessage.collectAsStateWithLifecycle()
     val view = LocalView.current
     var isPaused by remember { mutableStateOf(false) }
 
@@ -177,7 +180,7 @@ fun VoiceSearchDialog(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = if (isPaused) "Voice Input Paused" else viewModel.voiceMessage,
+                    text = if (isPaused) "Voice Input Paused" else voiceMessage,
                     fontSize = 22.sp,
                     color = Color(0xFF0F172A),
                     fontWeight = FontWeight.ExtraBold,
