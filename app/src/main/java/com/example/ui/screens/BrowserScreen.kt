@@ -125,9 +125,11 @@ fun BrowserScreen(
 ) {
     val context = LocalContext.current
     val browserBookmarks by viewModel.browserBookmarks.collectAsStateWithLifecycle()
+    val browserUrlState by viewModel.browserUrl.collectAsStateWithLifecycle()
+    val isBrowserFullscreenState by viewModel.isBrowserFullscreen.collectAsStateWithLifecycle()
     var webViewRef by remember { mutableStateOf<WebView?>(null) }
     var lastLoadedUrl by remember { mutableStateOf("") }
-    var currentUrl by remember { mutableStateOf(viewModel.browserUrl) }
+    var currentUrl by remember { mutableStateOf(browserUrlState) }
     var isPageLoading by remember { mutableStateOf(false) }
     var pageProgress by remember { mutableStateOf(0f) }
     var canGoBackState by remember { mutableStateOf(false) }
@@ -163,7 +165,7 @@ fun BrowserScreen(
     val focusManager = LocalFocusManager.current
 
     // Intercept system Back gesture/button when browsing so it goes back in web history or returns to Home page, instead of exiting the app!
-    BackHandler(enabled = viewModel.browserUrl.isNotEmpty() || isSearchFocused) {
+    BackHandler(enabled = browserUrlState.isNotEmpty() || isSearchFocused) {
         if (isSearchFocused) {
             focusManager.clearFocus()
             isSearchFocused = false
@@ -175,12 +177,12 @@ fun BrowserScreen(
     }
 
     // Sync input box when viewModel url shifts
-    LaunchedEffect(viewModel.browserUrl) {
-        if (viewModel.browserUrl.isNotEmpty()) {
-            if (viewModel.browserUrl != lastLoadedUrl) {
-                lastLoadedUrl = viewModel.browserUrl
-                currentUrl = viewModel.browserUrl
-                webViewRef?.loadUrl(viewModel.browserUrl)
+    LaunchedEffect(browserUrlState) {
+        if (browserUrlState.isNotEmpty()) {
+            if (browserUrlState != lastLoadedUrl) {
+                lastLoadedUrl = browserUrlState
+                currentUrl = browserUrlState
+                webViewRef?.loadUrl(browserUrlState)
             }
         } else {
             if (lastLoadedUrl.isNotEmpty()) {
@@ -218,7 +220,7 @@ fun BrowserScreen(
         }
     }
 
-    val isStartPage = viewModel.browserUrl.isEmpty()
+    val isStartPage = browserUrlState.isEmpty()
     val screenBgColor = Color(0xFFF8FAFC)
 
     Box(
@@ -234,8 +236,8 @@ fun BrowserScreen(
             modifier = Modifier.fillMaxSize()
         ) {
         // --- TOP URL ADDRESS BAR & CONTROL HEADER ---
-        if (!viewModel.isBrowserFullscreen) {
-            val isStartPage = viewModel.browserUrl.isEmpty()
+        if (!isBrowserFullscreenState) {
+            val isStartPage = browserUrlState.isEmpty()
             val headerBgColor = if (isStartPage) Color.Transparent else Color.White
             val searchBoxBgColor = if (viewModel.isIncognitoMode) Color(0xFFF3E8FF) else if (isStartPage) Color.White else Color(0xFFF1F5F9)
             val searchBoxBorderColor = if (viewModel.isIncognitoMode) Color(0xFFC084FC) else Color(0xFFE2E8F0)
@@ -715,7 +717,7 @@ fun BrowserScreen(
                 .weight(1f)
                 .fillMaxWidth()
         ) {
-            if (viewModel.browserUrl.isEmpty()) {
+            if (browserUrlState.isEmpty()) {
                 // Display Custom Chrome-Style Start Page (Fully Light Theme, colorful search tiles)
                 Column(
                     modifier = Modifier
@@ -1462,9 +1464,9 @@ fun BrowserScreen(
                                 }
                             }
 
-                            if (viewModel.browserUrl.isNotEmpty()) {
-                                lastLoadedUrl = viewModel.browserUrl
-                                loadUrl(viewModel.browserUrl)
+                            if (browserUrlState.isNotEmpty()) {
+                                lastLoadedUrl = browserUrlState
+                                loadUrl(browserUrlState)
                             } else {
                                 loadUrl("about:blank")
                             }
@@ -1515,7 +1517,7 @@ fun BrowserScreen(
                         .padding(bottom = 88.dp, end = 18.dp)
                 ) {
                     androidx.compose.animation.AnimatedVisibility(
-                        visible = !detectedVideoUrl.isNullOrEmpty() && !viewModel.isBrowserFullscreen,
+                        visible = !detectedVideoUrl.isNullOrEmpty() && !isBrowserFullscreenState,
                         enter = scaleIn(animationSpec = spring(stiffness = Spring.StiffnessLow)) + fadeIn(),
                         exit = scaleOut() + fadeOut()
                     ) {
@@ -1911,7 +1913,7 @@ fun BrowserScreen(
                 }
 
                 // Exit Fullscreen Floating Action Button
-                if (viewModel.isBrowserFullscreen) {
+                if (isBrowserFullscreenState) {
                     IconButton(
                         onClick = { viewModel.toggleBrowserFullscreen(false) },
                         modifier = Modifier
@@ -1937,7 +1939,7 @@ fun BrowserScreen(
         }
 
         // --- BOTTOM BROWSER NAVIGATION & CONTROL BAR ---
-        if (!viewModel.isBrowserFullscreen && viewModel.browserUrl.isNotEmpty()) {
+        if (!isBrowserFullscreenState && browserUrlState.isNotEmpty()) {
             val context = LocalContext.current
             val isProtectionActive = viewModel.isProtectionEnabled
             

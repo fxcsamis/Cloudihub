@@ -212,6 +212,8 @@ class MainActivity : FragmentActivity() {
             val playingVideoState by viewModel.playingVideo.collectAsStateWithLifecycle()
             val showVoiceDialogState by viewModel.showVoiceDialog.collectAsStateWithLifecycle()
             val isTabContentLoadingState by viewModel.isTabContentLoading.collectAsStateWithLifecycle()
+            val browserUrlState by viewModel.browserUrl.collectAsStateWithLifecycle()
+            val isBrowserFullscreenState by viewModel.isBrowserFullscreen.collectAsStateWithLifecycle()
             val showSplashScreen = !splashAnimationDone || (isLoadingVideosState && !splashSafetyTimeoutHit)
             var showExitConfirmDialog by remember { mutableStateOf(false) }
 
@@ -246,7 +248,7 @@ class MainActivity : FragmentActivity() {
                     viewModel.isPlaylistOverlayOpen = false
                 } else if (viewModel.activeProfilePage != "main") {
                     viewModel.activeProfilePage = "main"
-                } else if (activeTabState == NavigationTab.Browser && viewModel.browserUrl.isNotEmpty()) {
+                } else if (activeTabState == NavigationTab.Browser && browserUrlState.isNotEmpty()) {
                     viewModel.openUrl("")
                 } else if (activeTabState != NavigationTab.Home) {
                     viewModel.selectTab(NavigationTab.Home)
@@ -356,7 +358,7 @@ class MainActivity : FragmentActivity() {
                                 viewModel.showEditProfileScreen ||
                                 viewModel.showAiFullChatScreen || 
                                 isVaultActive || 
-                                (activeTabState == NavigationTab.Browser && (viewModel.isBrowserFullscreen || viewModel.browserUrl.isNotEmpty())) ||
+                                (activeTabState == NavigationTab.Browser && (isBrowserFullscreenState || browserUrlState.isNotEmpty())) ||
                                 viewModel.isPlaylistOverlayOpen ||
                                 viewModel.isFullMusicPlayerOpen ||
                                 !viewModel.isNavBarVisible
@@ -445,7 +447,7 @@ class MainActivity : FragmentActivity() {
                         )
 
                         // 8. Global Floating AI Lottie Assistant Overlay (Available across all screens except Private Vault, Signup, Edit Profile, Full AI Chat, Active Website View & Full Music Player)
-                        val isBrowsingActiveSite = (activeTabState == NavigationTab.Browser && viewModel.browserUrl.isNotEmpty())
+                        val isBrowsingActiveSite = (activeTabState == NavigationTab.Browser && browserUrlState.isNotEmpty())
                         if (!isVaultActive && !viewModel.showSignupScreen && !viewModel.showEditProfileScreen && !viewModel.showAiFullChatScreen && !isBrowsingActiveSite && !viewModel.isFullMusicPlayerOpen) {
                             FloatingAiLottieWidget(
                                 viewModel = viewModel,

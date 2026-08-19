@@ -707,14 +707,14 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
         internal set
 
     // Browser state
-    var browserUrl by mutableStateOf("")
-        private set
+    private val _browserUrl = MutableStateFlow("")
+    val browserUrl: StateFlow<String> = _browserUrl.asStateFlow()
 
-    var isBrowserFullscreen by mutableStateOf(false)
-        private set
+    private val _isBrowserFullscreen = MutableStateFlow(false)
+    val isBrowserFullscreen: StateFlow<Boolean> = _isBrowserFullscreen.asStateFlow()
 
     fun toggleBrowserFullscreen(enabled: Boolean) {
-        isBrowserFullscreen = enabled
+        _isBrowserFullscreen.value = enabled
     }
 
     // Bookmark representation
@@ -996,7 +996,7 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     fun openUrl(url: String) {
-        browserUrl = url
+        _browserUrl.value = url
         _activeTab.value = NavigationTab.Browser
         if (!isIncognitoMode) {
             addHistoryItem("Browser", "Visited Page", url)
@@ -1009,7 +1009,7 @@ class CloudihubViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     fun updateBrowserUrlSilent(url: String) {
-        browserUrl = url
+        _browserUrl.value = url
         val currentTab = browserTabs.find { it.id == activeTabId }
         if (currentTab != null) {
             currentTab.url = url
