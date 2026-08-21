@@ -5,6 +5,7 @@ import android.content.Intent
 import android.widget.Toast
 import com.example.ui.components.ProfileAvatarWithBadge
 import com.example.ui.components.LocalSharedTransitionScope
+import com.example.ui.components.rememberIosStyleFlingBehavior
 import com.example.ui.clearSearchHistory
 import com.example.ui.addSearchQueryToHistory
 import com.example.ui.removeSearchQueryFromHistory
@@ -325,6 +326,7 @@ fun HomeScreen(
         ) {
             LazyColumn(
                 state = lazyListState,
+                flingBehavior = rememberIosStyleFlingBehavior(),
                 contentPadding = PaddingValues(top = topPaddingDp, bottom = 100.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.fillMaxSize()

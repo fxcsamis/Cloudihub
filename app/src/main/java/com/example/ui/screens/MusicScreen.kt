@@ -6,6 +6,7 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import com.example.ui.components.LocalSharedTransitionScope
+import com.example.ui.components.rememberIosStyleFlingBehavior
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -529,6 +530,7 @@ fun MusicScreen(
         // MAIN SCROLLABLE YOUTUBE MUSIC CONTENT
         LazyColumn(
             state = musicListState,
+            flingBehavior = rememberIosStyleFlingBehavior(),
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(top = 160.dp, bottom = 140.dp)
         ) {
