@@ -1249,14 +1249,15 @@ fun VideoCloudCard(
                     },
                 contentAlignment = Alignment.Center
             ) {
-                // Background Cloud Shape decorative layer with shadow
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(6.dp)
-                        .shadow(elevation = 4.dp, shape = CloudShape(), clip = false)
-                        .background(Color.White.copy(alpha = 0.92f), CloudShape())
-                )
+                // PERF FIX: this decorative cloud-shaped white layer sat directly
+                // behind the video thumbnail image below, which fills the exact
+                // same area (Modifier.fillMaxSize()) - so it was 100% hidden,
+                // never visible to the user. Its shadow used a custom curved
+                // CloudShape() outline instead of a simple rectangle, which is
+                // much more expensive for Android to render (an offscreen blurred
+                // mask following an irregular path). Computing that for every
+                // single video card, on every scroll, for something nobody could
+                // ever see, was pure wasted GPU work - removed entirely.
 
                 // Actual video thumbnail image sitting inside
                 AsyncImage(
