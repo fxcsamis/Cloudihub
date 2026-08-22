@@ -28,7 +28,18 @@ import kotlinx.coroutines.CancellationException
  */
 class IosStyleFlingBehavior(
     private val decelerationRate: Float = DECELERATION_RATE_NORMAL,
-    private val velocityThresholdPxPerMs: Float = 0.01f
+    // BUG FIX: the reference library's own threshold (1e-2 px/ms) is only
+    // meant to decide when the SCROLL POSITION has stopped moving - it was
+    // never meant to gate a Compose coroutine that re-runs scrollBy() on
+    // every single frame until it's crossed. With this threshold, a normal
+    // flick kept this fling loop (and the per-frame recomposition it causes)
+    // running for 2.3-3.3 SECONDS after every single scroll gesture - so
+    // every scroll had a multi-second tail of continuous per-frame work,
+    // and any tap during that window competed with it for frame budget.
+    // Raising the threshold (and capping duration below) keeps the "glides
+    // further than Android's default" iOS feel without the multi-second cost.
+    private val velocityThresholdPxPerMs: Float = 0.35f,
+    private val maxFlingDurationMs: Float = 900f
 ) : FlingBehavior {
 
     override suspend fun ScrollScope.performFling(initialVelocity: Float): Float {
@@ -49,6 +60,11 @@ class IosStyleFlingBehavior(
                 withFrameNanos { frameTimeNanos ->
                     if (startTimeNanos < 0L) startTimeNanos = frameTimeNanos
                     val elapsedMs = (frameTimeNanos - startTimeNanos) / 1_000_000f
+
+                    if (elapsedMs > maxFlingDurationMs) {
+                        currentVelocity = 0f
+                        return@withFrameNanos
+                    }
 
                     val offset = v0 * invLnRate * (decelerationRate.pow(elapsedMs) - 1f)
                     val delta = offset - previousOffset
