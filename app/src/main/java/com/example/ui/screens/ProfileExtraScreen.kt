@@ -1,4 +1,5 @@
 package com.example.ui.screens
+import com.example.ui.components.rememberIosStyleFlingBehavior
 
 import com.example.ui.components.WaveBallLoaderHtmlView
 
@@ -191,6 +192,7 @@ fun WatchLaterScreen(viewModel: CloudihubViewModel) {
             }
         } else {
             LazyColumn(
+                flingBehavior = rememberIosStyleFlingBehavior(),
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {

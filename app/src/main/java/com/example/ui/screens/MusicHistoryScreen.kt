@@ -1,4 +1,5 @@
 package com.example.ui.screens
+import com.example.ui.components.rememberIosStyleFlingBehavior
 
 import android.app.Activity
 import android.widget.Toast
@@ -247,6 +248,7 @@ fun RecentMusicHistoryScreenOverlay(
                     }
                 } else {
                     LazyColumn(
+                        flingBehavior = rememberIosStyleFlingBehavior(),
                         contentPadding = PaddingValues(top = 12.dp, bottom = 100.dp, start = 16.dp, end = 16.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {

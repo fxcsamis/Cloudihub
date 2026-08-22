@@ -1,4 +1,5 @@
 package com.example.ui.screens
+import com.example.ui.components.rememberIosStyleFlingBehavior
 
 import com.example.ui.components.WaveBallLoaderHtmlView
 
@@ -538,6 +539,7 @@ fun MainProfileContent(
             ) {
                 Column(modifier = Modifier.padding(14.dp)) {
                     LazyRow(
+                        flingBehavior = rememberIosStyleFlingBehavior(),
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         contentPadding = PaddingValues(vertical = 4.dp)

@@ -1,4 +1,5 @@
 package com.example.ui.screens
+import com.example.ui.components.rememberIosStyleFlingBehavior
 
 import androidx.activity.compose.BackHandler
 import com.example.ui.components.NavigationTab
@@ -149,6 +150,7 @@ fun DownloadsScreen(
 
                     // --- TOP TABS (Download, Videos, Music, Folders) ---
                     LazyRow(
+                        flingBehavior = rememberIosStyleFlingBehavior(),
                         modifier = Modifier.fillMaxWidth(),
                         contentPadding = PaddingValues(horizontal = 12.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -274,6 +276,7 @@ private fun DownloadSectionPage(
         }
     } else {
         LazyColumn(
+            flingBehavior = rememberIosStyleFlingBehavior(),
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 12.dp),
@@ -378,6 +381,7 @@ private fun VideosSectionPage(viewModel: CloudihubViewModel) {
         )
     } else {
         LazyColumn(
+            flingBehavior = rememberIosStyleFlingBehavior(),
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 12.dp),
@@ -407,6 +411,7 @@ private fun MusicSectionPage(viewModel: CloudihubViewModel) {
         )
     } else {
         LazyColumn(
+            flingBehavior = rememberIosStyleFlingBehavior(),
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 12.dp),
@@ -435,6 +440,7 @@ private fun FoldersSectionPage(viewModel: CloudihubViewModel) {
     )
 
     LazyColumn(
+        flingBehavior = rememberIosStyleFlingBehavior(),
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 12.dp),

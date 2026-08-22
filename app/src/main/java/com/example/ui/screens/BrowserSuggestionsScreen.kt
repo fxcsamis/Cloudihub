@@ -1,4 +1,5 @@
 package com.example.ui.screens
+import com.example.ui.components.rememberIosStyleFlingBehavior
 
 import android.app.Activity
 import android.content.Intent
@@ -339,6 +340,7 @@ fun BrowserSearchSuggestionsPanel(
             }
         } else {
             LazyColumn(
+                flingBehavior = rememberIosStyleFlingBehavior(),
                 verticalArrangement = Arrangement.spacedBy(6.dp),
                 contentPadding = PaddingValues(bottom = 24.dp)
             ) {

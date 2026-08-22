@@ -1,4 +1,5 @@
 package com.example.ui.screens
+import com.example.ui.components.rememberIosStyleFlingBehavior
 
 import android.app.Activity
 import android.widget.Toast
@@ -110,6 +111,7 @@ fun PlaylistDetailOverlay(
     ) {
         // Scrollable content
         LazyColumn(
+            flingBehavior = rememberIosStyleFlingBehavior(),
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(top = 0.dp, bottom = 120.dp)
         ) {

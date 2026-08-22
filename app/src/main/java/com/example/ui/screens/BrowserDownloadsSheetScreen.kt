@@ -1,4 +1,5 @@
 package com.example.ui.screens
+import com.example.ui.components.rememberIosStyleFlingBehavior
 
 import android.app.Activity
 import android.content.Intent
@@ -175,6 +176,7 @@ fun BrowserDownloadsSheet(
                 }
             } else {
                 LazyColumn(
+                    flingBehavior = rememberIosStyleFlingBehavior(),
                     modifier = Modifier
                         .fillMaxWidth()
                         .heightIn(max = 320.dp),

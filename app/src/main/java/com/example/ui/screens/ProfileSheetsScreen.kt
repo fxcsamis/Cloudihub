@@ -1,4 +1,5 @@
 package com.example.ui.screens
+import com.example.ui.components.rememberIosStyleFlingBehavior
 
 import com.example.ui.components.WaveBallLoaderHtmlView
 
@@ -309,6 +310,7 @@ fun HistoryBottomSheet(
                 }
             } else {
                 LazyColumn(
+                    flingBehavior = rememberIosStyleFlingBehavior(),
                     modifier = Modifier
                         .fillMaxWidth()
                         .heightIn(max = 360.dp),

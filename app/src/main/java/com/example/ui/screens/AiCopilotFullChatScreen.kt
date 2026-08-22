@@ -1,4 +1,5 @@
 package com.example.ui.screens
+import com.example.ui.components.rememberIosStyleFlingBehavior
 
 import com.example.ui.components.WaveBallLoaderHtmlView
 
@@ -331,6 +332,7 @@ fun AiCopilotFullChatScreen(
 
             // 2. Chat Messages Area
             LazyColumn(
+                flingBehavior = rememberIosStyleFlingBehavior(),
                 state = listState,
                 modifier = Modifier
                     .weight(1f)

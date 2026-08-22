@@ -1,4 +1,5 @@
 package com.example.ui.screens
+import com.example.ui.components.rememberIosStyleFlingBehavior
 
 import com.example.ui.components.WaveBallLoaderHtmlView
 
@@ -283,6 +284,7 @@ fun LinkedDevicesScreen(viewModel: CloudihubViewModel) {
         // Devices List
         // Devices List
         LazyColumn(
+            flingBehavior = rememberIosStyleFlingBehavior(),
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp),
@@ -769,6 +771,7 @@ fun OfflineFoldersScreen(viewModel: CloudihubViewModel) {
                 )
 
                 LazyColumn(
+                    flingBehavior = rememberIosStyleFlingBehavior(),
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(horizontal = 16.dp),
@@ -864,7 +867,9 @@ fun OfflineFoldersScreen(viewModel: CloudihubViewModel) {
 
                 if (folderTag == "backup" || folderTag == "cache") {
                     val staticList = if (folderTag == "backup") portalBackups else tempCaches
-                    LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    LazyColumn(
+                        flingBehavior = rememberIosStyleFlingBehavior(),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)) {
                         items(staticList, key = { it.hashCode() }) { item ->
                             val (filename, size) = item
                             Card(
@@ -936,7 +941,9 @@ fun OfflineFoldersScreen(viewModel: CloudihubViewModel) {
                         }
                     }
                 } else {
-                    LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    LazyColumn(
+                        flingBehavior = rememberIosStyleFlingBehavior(),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)) {
                         items(itemsList, key = { it.hashCode() }) { item ->
                             Card(
                                 modifier = Modifier

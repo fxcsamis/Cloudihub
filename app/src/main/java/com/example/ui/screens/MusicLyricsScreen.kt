@@ -1,4 +1,5 @@
 package com.example.ui.screens
+import com.example.ui.components.rememberIosStyleFlingBehavior
 
 import android.app.Activity
 import android.widget.Toast
@@ -206,6 +207,7 @@ fun DynamicLyricsSheet(
 
                 // Centered Lyrics Scrollable Content
                 LazyColumn(
+                    flingBehavior = rememberIosStyleFlingBehavior(),
                     state = lyricsListState,
                     modifier = Modifier
                         .weight(1f)

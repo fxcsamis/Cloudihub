@@ -1,4 +1,5 @@
 package com.example.ui.screens
+import com.example.ui.components.rememberIosStyleFlingBehavior
 
 import android.app.Activity
 import android.content.Intent
@@ -155,6 +156,7 @@ fun TabManagerDialog(
                     Spacer(modifier = Modifier.height(12.dp))
 
                     LazyColumn(
+                        flingBehavior = rememberIosStyleFlingBehavior(),
                         modifier = Modifier.weight(1f),
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {

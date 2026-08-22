@@ -1,4 +1,5 @@
 package com.example.ui.components
+import com.example.ui.components.rememberIosStyleFlingBehavior
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
@@ -171,6 +172,7 @@ fun DownloadsHub(
                     }
                 } else {
                     LazyColumn(
+                        flingBehavior = rememberIosStyleFlingBehavior(),
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {

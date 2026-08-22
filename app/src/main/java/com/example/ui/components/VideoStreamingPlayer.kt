@@ -1,5 +1,6 @@
 @file:kotlin.OptIn(ExperimentalSharedTransitionApi::class)
 package com.example.ui.components
+import com.example.ui.components.rememberIosStyleFlingBehavior
 
 import android.app.Activity
 import android.content.Context
@@ -777,6 +778,7 @@ fun VideoStreamingPlayer(
 
                     // 2. BELOW PLAYER SCROLLABLE FEED (Title, Channel, Action Pills, Up Next)
                     LazyColumn(
+                        flingBehavior = rememberIosStyleFlingBehavior(),
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth(),

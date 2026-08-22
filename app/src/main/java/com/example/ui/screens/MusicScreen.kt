@@ -480,6 +480,7 @@ fun MusicScreen(
 
                     // Continuous Auto-Running Marquee Filter Chips Row (Pauses on touch, resumes automatically)
                     LazyRow(
+                        flingBehavior = rememberIosStyleFlingBehavior(),
                         state = topCategoryLazyRowState,
                         modifier = Modifier.fillMaxWidth(),
                         contentPadding = PaddingValues(horizontal = 16.dp),
@@ -684,6 +685,7 @@ fun MusicScreen(
                     Spacer(modifier = Modifier.height(12.dp))
 
                     LazyRow(
+                        flingBehavior = rememberIosStyleFlingBehavior(),
                         contentPadding = PaddingValues(horizontal = 16.dp),
                         horizontalArrangement = Arrangement.spacedBy(14.dp)
                     ) {
@@ -838,6 +840,7 @@ fun MusicScreen(
                     Spacer(modifier = Modifier.height(12.dp))
 
                     LazyRow(
+                        flingBehavior = rememberIosStyleFlingBehavior(),
                         contentPadding = PaddingValues(horizontal = 16.dp),
                         horizontalArrangement = Arrangement.spacedBy(14.dp)
                     ) {

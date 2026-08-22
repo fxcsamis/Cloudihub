@@ -1,4 +1,5 @@
 package com.example.ui.screens
+import com.example.ui.components.rememberIosStyleFlingBehavior
 
 import android.app.Activity
 import android.content.Intent
@@ -1796,6 +1797,7 @@ fun BrowserScreen(
                                 }
                             } else {
                                 LazyColumn(
+                                    flingBehavior = rememberIosStyleFlingBehavior(),
                                     verticalArrangement = Arrangement.spacedBy(10.dp),
                                     modifier = Modifier.padding(bottom = 24.dp)
                                 ) {

@@ -1,4 +1,5 @@
 package com.example.ui.components
+import com.example.ui.components.rememberIosStyleFlingBehavior
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.Animatable
@@ -640,6 +641,7 @@ fun AiAssistantChatDialog(
 
             // Chat Messages List
             LazyColumn(
+                flingBehavior = rememberIosStyleFlingBehavior(),
                 state = listState,
                 verticalArrangement = Arrangement.spacedBy(10.dp),
                 modifier = Modifier

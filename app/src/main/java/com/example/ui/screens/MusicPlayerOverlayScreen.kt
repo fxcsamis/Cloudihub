@@ -1,4 +1,5 @@
 package com.example.ui.screens
+import com.example.ui.components.rememberIosStyleFlingBehavior
 
 import android.app.Activity
 import android.widget.Toast
@@ -269,6 +270,7 @@ fun FullMusicPlayerOverlay(
 
         // MAIN SCROLLABLE CONTENT (PLAYER VIEW + ARTIST PROFILE & HITS)
         LazyColumn(
+            flingBehavior = rememberIosStyleFlingBehavior(),
             state = lazyListState,
             modifier = Modifier
                 .fillMaxSize()
@@ -823,6 +825,7 @@ fun FullMusicPlayerOverlay(
                     Spacer(modifier = Modifier.height(10.dp))
 
                     LazyRow(
+                        flingBehavior = rememberIosStyleFlingBehavior(),
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(14.dp),
                         contentPadding = PaddingValues(horizontal = 20.dp)

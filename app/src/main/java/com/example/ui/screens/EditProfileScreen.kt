@@ -1,4 +1,5 @@
 package com.example.ui.screens
+import com.example.ui.components.rememberIosStyleFlingBehavior
 
 import android.widget.Toast
 import androidx.compose.animation.*
@@ -915,6 +916,7 @@ fun EditProfileScreen(
 
                         // Presets Row
                         LazyRow(
+                            flingBehavior = rememberIosStyleFlingBehavior(),
                             horizontalArrangement = Arrangement.spacedBy(10.dp),
                             modifier = Modifier.fillMaxWidth()
                         ) {

@@ -1,4 +1,5 @@
 package com.example.ui.screens
+import com.example.ui.components.rememberIosStyleFlingBehavior
 
 import com.example.ui.addSearchQueryToHistory
 import com.example.ui.clearSearchHistory
@@ -246,6 +247,7 @@ fun MusicSearchScreenOverlay(
 
             // Search Content Body
             LazyColumn(
+                flingBehavior = rememberIosStyleFlingBehavior(),
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(bottom = 120.dp)
             ) {
@@ -275,6 +277,7 @@ fun MusicSearchScreenOverlay(
                                 }
                                 Spacer(modifier = Modifier.height(10.dp))
                                 LazyRow(
+                                    flingBehavior = rememberIosStyleFlingBehavior(),
                                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
                                     items(viewModel.recentSearches, key = { it.hashCode() }) { historyQuery ->
@@ -331,6 +334,7 @@ fun MusicSearchScreenOverlay(
                             Spacer(modifier = Modifier.height(10.dp))
                             val trending = listOf("Atif Aslam Hits", "Arijit Singh", "Lofi Sunset", "Bangla Acoustic", "Toota Jo Kabhi", "Coke Studio", "Party Beats")
                             LazyRow(
+                                flingBehavior = rememberIosStyleFlingBehavior(),
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 items(trending, key = { it.hashCode() }) { tag ->

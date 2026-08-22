@@ -1,4 +1,5 @@
 package com.example.ui.screens
+import com.example.ui.components.rememberIosStyleFlingBehavior
 
 import com.example.ui.components.WaveBallLoaderHtmlView
 
@@ -1003,6 +1004,7 @@ fun SelectVaultFilesDialog(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 LazyColumn(
+                    flingBehavior = rememberIosStyleFlingBehavior(),
                     modifier = Modifier
                         .fillMaxWidth()
                         .heightIn(max = 280.dp),
@@ -1226,6 +1228,7 @@ fun CreateVaultFolderDialog(
             Spacer(modifier = Modifier.height(8.dp))
 
             LazyRow(
+                flingBehavior = rememberIosStyleFlingBehavior(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -1430,6 +1433,7 @@ fun VaultFolderDetailView(
                 }
             } else {
                 LazyColumn(
+                    flingBehavior = rememberIosStyleFlingBehavior(),
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                     modifier = Modifier
                         .fillMaxWidth()

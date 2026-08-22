@@ -1,4 +1,5 @@
 package com.example.debug
+import com.example.ui.components.rememberIosStyleFlingBehavior
 
 import android.view.Choreographer
 import androidx.compose.foundation.background
@@ -227,6 +228,7 @@ fun PerformanceDebugOverlay() {
                 Text("Live log", color = Color(0xFF94A3B8), fontSize = 13.sp)
                 Spacer(modifier = Modifier.height(4.dp))
                 LazyColumn(
+                    flingBehavior = rememberIosStyleFlingBehavior(),
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(160.dp)
