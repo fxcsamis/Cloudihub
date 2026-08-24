@@ -26,3 +26,4 @@ dependencyResolutionManagement {
 rootProject.name = "Cloudihub"
 
 include(":app")
+include(":macrobenchmark")

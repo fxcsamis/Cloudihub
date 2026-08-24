@@ -46,7 +46,12 @@ android {
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
       signingConfig = signingConfigs.getByName("release")
     }
-    debug { signingConfig = signingConfigs.getByName("debugConfig") }
+    debug {
+      signingConfig = signingConfigs.getByName("debugConfig")
+      // Lets the macrobenchmark module profile this debug build (frame
+      // timing, startup timing) without needing a full signed release build.
+      isProfileable = true
+    }
   }
   compileOptions {
     sourceCompatibility = JavaVersion.VERSION_11
