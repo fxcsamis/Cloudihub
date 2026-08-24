@@ -48,9 +48,6 @@ android {
     }
     debug {
       signingConfig = signingConfigs.getByName("debugConfig")
-      // Lets the macrobenchmark module profile this debug build (frame
-      // timing, startup timing) without needing a full signed release build.
-      isProfileable = true
     }
   }
   compileOptions {
