@@ -19,7 +19,7 @@ android {
     // whole extra signed "benchmark" build type - self-instrumenting lets
     // Macrobenchmark treat an otherwise-debuggable build as profileable.
     buildTypes {
-        release {
+        create("release") {
             isDebuggable = true
             signingConfig = signingConfigs.getByName("debug")
             matchingFallbacks += listOf("debug")
