@@ -79,7 +79,7 @@ jobs:
         force-avd-creation: false
         emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
         disable-animations: true
-        script: gradle :macrobenchmark:connectedCheck --no-daemon
+        script: gradle :macrobenchmark:connectedCheck --no-daemon --no-configuration-cache
 
     - name: Upload benchmark results
       if: always()
