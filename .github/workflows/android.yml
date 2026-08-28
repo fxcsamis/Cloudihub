@@ -39,9 +39,12 @@ jobs:
         if-no-files-found: error
 
   benchmark:
-    # Runs the on-device performance tests (macrobenchmark module) so scroll
-    # jank / startup time regressions show up as numbers in every CI run
-    # instead of only being caught by manually screen-recording the app.
+    # Runs the on-device performance tests (macrobenchmark module) on a real
+    # physical device via Firebase Test Lab. The previous local GitHub
+    # Actions emulator (reactivecircus/android-emulator-runner) uses
+    # software rendering (swiftshader) with no real GPU, so it cannot
+    # produce real FrameTimingMetric data (frame duration / jank) - only a
+    # bare frameCount. A physical device is required for real numbers.
     runs-on: ubuntu-latest
     needs: build
 
@@ -63,23 +66,28 @@ jobs:
     - name: Decode Debug Keystore
       run: base64 -d debug.keystore.base64 > debug.keystore
 
-    - name: Enable KVM (hardware acceleration for the emulator)
-      run: |
-        echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-        sudo udevadm control --reload-rules
-        sudo udevadm trigger --name-match=kvm
+    - name: Build app + benchmark test APKs
+      run: gradle :app:assembleDebug :macrobenchmark:assembleBenchmark --no-daemon
 
-    - name: Run Macrobenchmark on a virtual device
-      uses: reactivecircus/android-emulator-runner@v2
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v2
       with:
-        api-level: 33
-        target: google_apis
-        arch: x86_64
-        profile: pixel_6
-        force-avd-creation: false
-        emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-        disable-animations: true
-        script: gradle :macrobenchmark:connectedCheck --no-daemon --no-configuration-cache
+        credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v2
+      with:
+        project_id: cloudehubtest
+
+    - name: Run Macrobenchmark on Firebase Test Lab (real device)
+      run: |
+        gcloud firebase test android run \
+          --type instrumentation \
+          --app app/build/outputs/apk/debug/app-debug.apk \
+          --test macrobenchmark/build/outputs/apk/benchmark/macrobenchmark-benchmark.apk \
+          --device model=redfin,version=30,locale=en,orientation=portrait \
+          --timeout 15m \
+          --directories-to-pull=/sdcard/Download
 
     - name: Upload benchmark results
       if: always()

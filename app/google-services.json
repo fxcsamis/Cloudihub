@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "963341440325",
+    "project_id": "cloudehubtest",
+    "storage_bucket": "cloudehubtest.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:963341440325:android:e87a26ea442de28aeada2c",
+        "android_client_info": {
+          "package_name": "com.cloudihub.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAPcs1UzKM0nCrivSXX69ospZuHEbJ4fZo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
