@@ -81,6 +81,7 @@ jobs:
 
     - name: Run Macrobenchmark on Firebase Test Lab (real device)
       run: |
+        set -o pipefail
         gcloud firebase test android run \
           --type instrumentation \
           --app app/build/outputs/apk/debug/app-debug.apk \
@@ -88,12 +89,26 @@ jobs:
           --device model=redfin,version=30,locale=en,orientation=portrait \
           --timeout 15m \
           --directories-to-pull=/sdcard/Download \
-          --environment-variables="^;^androidx.benchmark.suppressErrors=EMULATOR,DEBUGGABLE"
+          --environment-variables="^;^androidx.benchmark.suppressErrors=EMULATOR,DEBUGGABLE" \
+          2>&1 | tee ftl-output.log
+
+    - name: Download benchmark results from Firebase Test Lab
+      # Test results (benchmarkData.json, perfetto traces, etc.) land in a
+      # Google-managed GCS bucket, not in the local build output folder -
+      # that's why the previous artifact only contained the APK. Parse the
+      # bucket URL gcloud printed and pull the real results down.
+      if: always()
+      run: |
+        RAW=$(grep -oE 'storage/browser/[^]]+' ftl-output.log | head -1)
+        BUCKET_PATH="gs://${RAW#storage/browser/}"
+        echo "Pulling results from: $BUCKET_PATH"
+        mkdir -p macrobenchmark-firebase-results
+        gsutil -m cp -r "${BUCKET_PATH}*" macrobenchmark-firebase-results/ || true
 
     - name: Upload benchmark results
       if: always()
       uses: actions/upload-artifact@v4
       with:
         name: macrobenchmark-results
-        path: macrobenchmark/build/outputs/**/*
+        path: macrobenchmark-firebase-results/**/*
         if-no-files-found: warn
