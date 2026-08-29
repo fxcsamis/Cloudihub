@@ -88,7 +88,7 @@ jobs:
           --test macrobenchmark/build/outputs/apk/benchmark/macrobenchmark-benchmark.apk \
           --device model=redfin,version=30,locale=en,orientation=portrait \
           --timeout 15m \
-          --directories-to-pull=/sdcard/Download,/sdcard/Android/media/com.example.macrobenchmark/additional_test_output \
+          --directories-to-pull=/sdcard/Download,/sdcard/Android/media/com.example.macrobenchmark \
           --environment-variables="^;^androidx.benchmark.suppressErrors=EMULATOR,DEBUGGABLE" \
           2>&1 | tee ftl-output.log
 
