@@ -87,7 +87,8 @@ jobs:
           --test macrobenchmark/build/outputs/apk/benchmark/macrobenchmark-benchmark.apk \
           --device model=redfin,version=30,locale=en,orientation=portrait \
           --timeout 15m \
-          --directories-to-pull=/sdcard/Download
+          --directories-to-pull=/sdcard/Download \
+          --environment-variables=^;^androidx.benchmark.suppressErrors=EMULATOR,DEBUGGABLE
 
     - name: Upload benchmark results
       if: always()
