@@ -88,7 +88,7 @@ jobs:
           --device model=redfin,version=30,locale=en,orientation=portrait \
           --timeout 15m \
           --directories-to-pull=/sdcard/Download \
-          --environment-variables=^;^androidx.benchmark.suppressErrors=EMULATOR,DEBUGGABLE
+          --environment-variables="^;^androidx.benchmark.suppressErrors=EMULATOR,DEBUGGABLE"
 
     - name: Upload benchmark results
       if: always()
