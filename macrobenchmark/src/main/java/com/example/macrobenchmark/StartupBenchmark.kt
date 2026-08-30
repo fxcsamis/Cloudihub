@@ -56,7 +56,7 @@ class StartupBenchmark {
     fun scrollHomeFeed() = benchmarkRule.measureRepeated(
         packageName = TARGET_PACKAGE,
         metrics = listOf(FrameTimingMetric()),
-        iterations = 5,
+        iterations = 3,
         startupMode = StartupMode.WARM
     ) {
         startActivityAndWait()
@@ -64,14 +64,18 @@ class StartupBenchmark {
         // Give the (now-instant, local-only) home feed a moment to compose,
         // then find the scrollable video list and fling it a few times -
         // mirroring what a person scrolling the feed by hand actually does.
+        // Kept short: a longer scrolling session produces a much bigger
+        // Perfetto trace, and on Firebase Test Lab that was taking so long
+        // to process that frame-duration metrics silently timed out,
+        // leaving only a bare frameCount in the results.
         device.waitForIdle()
         val list = device.wait(Until.findObject(By.scrollable(true)), 5_000)
         if (list != null) {
-            repeat(5) {
+            repeat(3) {
                 list.fling(Direction.DOWN)
                 device.waitForIdle()
             }
-            repeat(3) {
+            repeat(2) {
                 list.fling(Direction.UP)
                 device.waitForIdle()
             }
