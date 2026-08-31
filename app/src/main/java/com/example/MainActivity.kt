@@ -286,10 +286,13 @@ class MainActivity : FragmentActivity() {
                         CompositionLocalProvider(LocalSharedTransitionScope provides this) {
                             Box(modifier = Modifier.fillMaxSize()) {
                                 // Always-on-screen performance debug overlay (FPS,
-                                // frame time, memory, jank count, crash log) - zIndex
-                                // keeps it above every screen/dialog regardless of
-                                // where it sits in this Box's child order.
-                                com.example.debug.PerformanceDebugOverlay()
+                                // frame time, memory, jank count, crash log) - only
+                                // shown in debug builds. zIndex keeps it above every
+                                // screen/dialog regardless of where it sits in this
+                                // Box's child order.
+                                if (BuildConfig.DEBUG) {
+                                    com.example.debug.PerformanceDebugOverlay()
+                                }
                         // 0. Premium CloudeHub Animated Splash Screen Overlay
                         AnimatedVisibility(
                             visible = showSplashScreen,
