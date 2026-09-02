@@ -313,7 +313,6 @@ fun HomeScreen(
         modifier = modifier
             .fillMaxSize()
             .background(if (isDark) Color(0xFF0F172A) else Color(0xFFF8FAFC))
-            .nestedScroll(nestedScrollConnection)
     ) {
         if (isEmptyResults) {
             CloudSkyBackground(modifier = Modifier.fillMaxSize())
@@ -329,7 +328,9 @@ fun HomeScreen(
                 flingBehavior = rememberIosStyleFlingBehavior(),
                 contentPadding = PaddingValues(top = topPaddingDp, bottom = 100.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .nestedScroll(nestedScrollConnection)
             ) {
                 // Content Feed Items: Loading, Empty, or Videos
                 if (isLoadingVideosState) {

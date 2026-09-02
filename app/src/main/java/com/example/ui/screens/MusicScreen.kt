@@ -219,6 +219,12 @@ fun MusicScreen(
     LaunchedEffect(Unit) {
         isTopBarMounted = true
     }
+    // Reset on leaving the screen so the bounce-in reliably replays every
+    // time the user switches back to this tab, instead of only playing
+    // once ever if this composable's state happens to survive tab switches.
+    DisposableEffect(Unit) {
+        onDispose { isTopBarMounted = false }
+    }
 
     val density = LocalDensity.current
     var topBarOffsetHeightPx by remember { mutableStateOf(0f) }
