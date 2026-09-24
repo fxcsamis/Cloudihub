@@ -1,0 +1,27 @@
+name: arkitak
+description: ARKITAK — always-on duplex voice assistant with a native particle orb UI.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+  flutter: '>=3.24.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Speech-to-text and text-to-speech. Versions below are a reasonable recent
+  # baseline — this sandbox has no network, so run `flutter pub get` and bump
+  # to whatever pub.dev resolves as latest if these don't resolve cleanly.
+  speech_to_text: ^7.0.0
+  flutter_tts: ^4.0.2
+  permission_handler: ^11.3.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
